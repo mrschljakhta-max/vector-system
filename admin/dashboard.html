@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VECTOR - Admin Dashboard</title>
+  <title>VECTOR - Admin</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -14,41 +14,53 @@
   <meta name="theme-color" content="#111418" />
 </head>
 <body>
-  <main class="admin-shell">
-    <section class="admin-dashboard">
-      <header class="admin-topbar">
-        <div class="admin-brand">
-          <span class="admin-brand__kicker">CONTROL CENTER</span>
-          <h1>VECTOR</h1>
-        </div>
-        <div class="admin-actions">
-          <button class="admin-btn" id="themeToggle" type="button">Тема</button>
-          <button class="admin-btn" id="logoutBtn" type="button">Вийти</button>
-        </div>
-      </header>
+  <main class="admin-layout">
+    <aside class="admin-sidebar" aria-label="Навігація адмін-панелі">
+      <a class="admin-sidebar__logo" href="./dashboard.html" aria-label="VECTOR admin dashboard">
+        <img class="admin-sidebar__logo-img admin-sidebar__logo-img--light" src="../assets/logo-dark.png" alt="VECTOR">
+        <img class="admin-sidebar__logo-img admin-sidebar__logo-img--dark" src="../assets/logo-light.png" alt="VECTOR">
+      </a>
 
-      <div class="admin-panel-grid" aria-label="Модулі адмін-панелі">
-        <article class="admin-card">
-          <span>01</span>
-          <h2>Заявки</h2>
-          <p>Місце для перегляду та підтвердження заявок на доступ до офіційного сайту.</p>
-        </article>
-        <article class="admin-card">
-          <span>02</span>
-          <h2>Користувачі</h2>
-          <p>Місце для контролю активних користувачів, ролей та статусів доступу.</p>
-        </article>
-        <article class="admin-card">
-          <span>03</span>
-          <h2>Журнал</h2>
-          <p>Місце для майбутнього журналу дій адміністратора та системних подій.</p>
-        </article>
-        <article class="admin-card">
-          <span>04</span>
-          <h2>Supabase</h2>
-          <p>Наступний етап — підключення перевірки користувачів через базу даних.</p>
-        </article>
-      </div>
+      <nav class="admin-nav">
+        <a class="admin-nav__item is-active" href="#" data-page="grant-access">
+          <span class="admin-nav__icon">+</span>
+          <span>Надати доступ</span>
+        </a>
+        <a class="admin-nav__item" href="#" data-page="users">
+          <span class="admin-nav__icon">◎</span>
+          <span>Користувачі</span>
+        </a>
+        <a class="admin-nav__item" href="#" data-page="admin-access">
+          <span class="admin-nav__icon">▣</span>
+          <span>Адмін-доступ</span>
+        </a>
+        <a class="admin-nav__item" href="#" data-page="requests">
+          <span class="admin-nav__icon">◇</span>
+          <span>Заявки</span>
+        </a>
+        <a class="admin-nav__item" href="#" data-page="logs">
+          <span class="admin-nav__icon">≋</span>
+          <span>Логування</span>
+        </a>
+        <a class="admin-nav__item" href="#" data-page="settings">
+          <span class="admin-nav__icon">⚙</span>
+          <span>Налаштування</span>
+        </a>
+      </nav>
+
+      <button class="admin-nav__logout" id="logoutBtn" type="button">
+        <span class="admin-nav__icon">↩</span>
+        <span>Вийти</span>
+      </button>
+    </aside>
+
+    <section class="admin-workspace" aria-label="Робоча область адмін-панелі">
+      <button class="theme-toggle admin-theme-toggle" id="themeToggle" type="button" aria-label="Перемкнути тему">
+        <span class="theme-toggle__track"><span class="theme-toggle__dot"></span></span>
+        <span class="theme-toggle__text" id="themeLabel">Світла</span>
+      </button>
+
+      <div class="admin-empty-body" aria-hidden="true"></div>
     </section>
   </main>
 

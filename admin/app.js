@@ -87,5 +87,5 @@ loginForm?.addEventListener('submit', (event) => {
 
   setTimeout(() => {
     window.location.href = './dashboard.html';
-  }, 450);
+  }, 350);
 });
