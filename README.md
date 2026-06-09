@@ -35,3 +35,8 @@ vector-system/
     ├── styles.css
     └── app.js
 ```
+
+
+## Оновлення адмін-сайту
+
+Додано окремий фон `admin-bg-light.png` / `admin-bg-dark.png` та перероблено стартову сторінку адмін-сайту у стилі VECTOR Control Center.
