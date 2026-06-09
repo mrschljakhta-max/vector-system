@@ -171,5 +171,150 @@ body{overflow:hidden;background:#f2f2ef}
   .theme-toggle{right:18px;top:18px}
 }
 
-.hero-actions{position:absolute;right:14vw;top:62%;display:flex;gap:16px;z-index:4}
-.hero-btn{padding:14px 28px;border:1px solid var(--line);background:var(--glass-strong);color:var(--ink);font-family:inherit;font-weight:700;letter-spacing:.15em;text-transform:uppercase;backdrop-filter:blur(10px);text-decoration:none}
+.hero-actions{
+  position:absolute;
+  z-index:4;
+  right:15.2vw;
+  top:64.5%;
+  width:min(420px,32vw);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:18px;
+  transform:translateY(-50%);
+}
+.hero-actions--admin{top:63%}
+.hero-btn{
+  position:relative;
+  width:100%;
+  min-height:74px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:28px;
+  padding:0 34px;
+  color:var(--ink);
+  text-decoration:none;
+  text-transform:uppercase;
+  letter-spacing:.24em;
+  font-family:inherit;
+  font-size:20px;
+  font-weight:700;
+  border:1px solid rgba(255,255,255,.14);
+  background:
+    linear-gradient(180deg,rgba(42,46,51,.94),rgba(12,15,18,.96));
+  color:#f2f0ea;
+  box-shadow:
+    0 24px 60px rgba(0,0,0,.28),
+    inset 0 1px 0 rgba(255,255,255,.12),
+    inset 0 -2px 0 rgba(215,130,25,.88);
+  clip-path:polygon(18px 0,100% 0,100% calc(100% - 18px),calc(100% - 18px) 100%,0 100%,0 18px);
+  overflow:hidden;
+  transition:transform .22s ease, filter .22s ease, box-shadow .22s ease;
+}
+.hero-btn::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.14),transparent);
+  transform:translateX(-120%);
+  transition:transform .55s ease;
+}
+.hero-btn::after{
+  content:"";
+  position:absolute;
+  left:50%;
+  bottom:0;
+  width:58%;
+  height:2px;
+  transform:translateX(-50%);
+  background:linear-gradient(90deg,transparent,var(--accent),transparent);
+  opacity:.95;
+}
+.hero-btn:hover{
+  transform:translateY(-2px);
+  filter:brightness(1.08);
+  box-shadow:
+    0 28px 70px rgba(0,0,0,.34),
+    0 0 24px rgba(215,130,25,.14),
+    inset 0 1px 0 rgba(255,255,255,.16),
+    inset 0 -2px 0 rgba(215,130,25,1);
+}
+.hero-btn:hover::before{transform:translateX(120%)}
+.hero-btn__arrow{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:24px;
+  height:24px;
+  color:var(--accent);
+  font-size:34px;
+  line-height:1;
+  margin-top:-2px;
+  transition:transform .22s ease;
+}
+.hero-btn:hover .hero-btn__arrow{transform:translateX(4px)}
+.request-link{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  min-height:28px;
+  padding:0 18px 7px;
+  color:var(--accent);
+  text-decoration:none;
+  text-transform:uppercase;
+  letter-spacing:.30em;
+  font-family:inherit;
+  font-size:15px;
+  font-weight:700;
+  text-shadow:0 0 18px rgba(215,130,25,.18);
+  transition:letter-spacing .22s ease, filter .22s ease, transform .22s ease;
+}
+.request-link::before,
+.request-link::after{
+  content:"";
+  position:absolute;
+  bottom:0;
+  width:70px;
+  height:1px;
+  background:linear-gradient(90deg,transparent,var(--accent));
+  opacity:.7;
+}
+.request-link::before{right:100%}
+.request-link::after{left:100%;transform:scaleX(-1)}
+.request-link:hover{
+  transform:translateY(-1px);
+  letter-spacing:.34em;
+  filter:brightness(1.15);
+}
+:root[data-theme="light"] .hero-btn{
+  border-color:rgba(20,24,28,.12);
+  background:linear-gradient(180deg,rgba(250,250,247,.88),rgba(222,220,214,.94));
+  color:#15191d;
+  box-shadow:
+    0 22px 55px rgba(40,42,44,.18),
+    inset 0 1px 0 rgba(255,255,255,.72),
+    inset 0 -2px 0 rgba(215,130,25,.82);
+}
+:root[data-theme="light"] .hero-btn::before{background:linear-gradient(90deg,transparent,rgba(255,255,255,.72),transparent)}
+:root[data-theme="light"] .request-link{color:#ba6b10;text-shadow:none}
+@media(max-width:1100px){
+  .hero-actions{right:7vw;width:min(390px,40vw)}
+  .hero-btn{min-height:66px;font-size:18px}
+}
+@media(max-width:760px){
+  .hero-actions{
+    position:fixed;
+    left:22px;
+    right:22px;
+    bottom:36px;
+    top:auto;
+    width:auto;
+    transform:none;
+    gap:14px;
+  }
+  .hero-btn{min-height:58px;font-size:16px;letter-spacing:.18em}
+  .request-link{font-size:13px;letter-spacing:.22em}
+  .request-link::before,.request-link::after{width:44px}
+}
