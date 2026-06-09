@@ -30,20 +30,17 @@ body{overflow:hidden;background:#f2f2ef}
   position:relative;
   overflow:hidden;
   background-image:url('../assets/admin-bg-light.png');
-  background-position:center;
-  background-size:auto 86vh;
+  background-position:center center;
+  background-size:cover;
   background-repeat:no-repeat;
   transition:background-image .35s ease, color .35s ease;
 }
 :root[data-theme="dark"] .page{background-image:url('../assets/admin-bg-dark.png')}
 
-/* Admin start page: keep the CONTROL CENTER artwork slightly smaller than full-screen. */
+/* Admin start page: use the artwork as a full-screen background. */
 .admin-page{
-  background-size:auto 86vh;
+  background-size:cover;
   background-position:center center;
-}
-@media (min-width: 1500px){
-  .admin-page{background-size:auto 84vh;}
 }
 
 .page::after{
@@ -259,7 +256,7 @@ body{overflow:hidden;background:#f2f2ef}
 }
 @media(max-width:760px){
   body{overflow:auto}
-  .page{min-height:100svh;background-position:left center}
+  .page{min-height:100svh;background-position:center center;background-size:cover}
   .theme-toggle__text{display:none}
   .theme-toggle{right:18px;top:18px}
   .entry-trigger{position:fixed;left:22px;right:22px;bottom:48px;top:auto;transform:none;gap:12px}
@@ -268,5 +265,3 @@ body{overflow:hidden;background:#f2f2ef}
   .auth-modal{align-items:flex-end;justify-content:center;padding:72px 18px 24px;background:rgba(0,0,0,.18)}
   .auth-panel{width:100%;max-height:calc(100svh - 96px)}
 }
-
-.official-link:hover{color:var(--accent);transform:translateY(-1px)}
