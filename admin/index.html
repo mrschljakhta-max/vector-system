@@ -3,7 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ВЕКТОР Admin — вхід</title>
+  <title>VECTOR Admin — вхід</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
@@ -15,14 +18,19 @@
       <span class="theme-toggle__text" id="themeLabel">Світла</span>
     </button>
 
-    <main class="brand-panel" aria-label="Вхід до адміністративної панелі Вектор">
-      <img class="brand-logo brand-logo--dark" src="../assets/logo-dark.png" alt="Вектор" />
-      <img class="brand-logo brand-logo--light" src="../assets/logo-light.png" alt="Вектор" />
-      <h1>ВЕКТОР</h1>
-      <div class="brand-kicker">аналітична система</div>
+    <main class="brand-panel" aria-label="Вхід до адміністративної панелі VECTOR">
+      <div class="brand-title">
+        <img class="brand-logo brand-logo--dark" src="../assets/logo-dark.png" alt="VECTOR" />
+        <img class="brand-logo brand-logo--light" src="../assets/logo-light.png" alt="VECTOR" />
+        <h1>VECTOR</h1>
+      </div>
+
+      <div class="brand-kicker">АНАЛІТИЧНА СИСТЕМА</div>
       <div class="admin-label">ADMIN</div>
-      <button class="entry-btn" id="openLogin" type="button">
-        <span>Вхід</span><i></i><span class="arrow">→</span>
+
+      <button class="admin-entry" id="openLogin" type="button">
+        <span class="entry-icon">↪</span>
+        <span>Вхід</span>
       </button>
     </main>
 

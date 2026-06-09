@@ -1,4 +1,4 @@
-# ВЕКТОР — стартовий репозиторій
+# VECTOR — стартовий репозиторій
 
 Один репозиторій містить два статичні сайти:
 
@@ -19,10 +19,13 @@
 ## Структура
 
 ```text
-peleng-reb-starter/
+vector-system/
 ├── index.html
 ├── assets/
-│   └── login-bg.png
+│   ├── bg-light.png
+│   ├── bg-dark.png
+│   ├── logo-dark.png
+│   └── logo-light.png
 ├── official/
 │   ├── index.html
 │   ├── styles.css
