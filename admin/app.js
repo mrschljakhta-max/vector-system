@@ -1,8 +1,7 @@
 const root = document.documentElement;
-const openLogin = document.querySelector('#openLogin');
-const loginModal = document.querySelector('#loginModal');
 const themeToggle = document.querySelector('#themeToggle');
 const themeLabel = document.querySelector('#themeLabel');
+const loginForm = document.querySelector('#loginForm');
 
 function applyTheme(theme) {
   root.dataset.theme = theme;
@@ -14,7 +13,11 @@ const savedTheme = localStorage.getItem('vector-theme');
 const preferredTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 applyTheme(savedTheme || preferredTheme);
 
-openLogin?.addEventListener('click', () => loginModal?.showModal());
 themeToggle?.addEventListener('click', () => {
   applyTheme(root.dataset.theme === 'dark' ? 'light' : 'dark');
+});
+
+loginForm?.addEventListener('submit', (event) => {
+  event.preventDefault();
+  alert('Адмін-вхід підключимо до Supabase Auth на наступному етапі.');
 });
