@@ -170,3 +170,6 @@ body{overflow:hidden;background:#f2f2ef}
   .theme-toggle__text{display:none}
   .theme-toggle{right:18px;top:18px}
 }
+
+.hero-actions{position:absolute;right:14vw;top:62%;display:flex;gap:16px;z-index:4}
+.hero-btn{padding:14px 28px;border:1px solid var(--line);background:var(--glass-strong);color:var(--ink);font-family:inherit;font-weight:700;letter-spacing:.15em;text-transform:uppercase;backdrop-filter:blur(10px);text-decoration:none}
