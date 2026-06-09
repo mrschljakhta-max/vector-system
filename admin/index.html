@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ПЕЛЕНГ Admin — вхід</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="page admin-page">
+    <div class="brand-panel">
+      <div class="brand-kicker">панель керування доступом</div>
+      <h1>ПЕЛЕНГ</h1>
+      <div class="admin-label">ADMIN</div>
+      <button class="entry-btn" id="openLogin" type="button">
+        <span>Вхід</span><i></i><span class="arrow">→</span>
+      </button>
+    </div>
+
+    <dialog class="login-modal" id="loginModal">
+      <form method="dialog" class="login-card">
+        <button class="close" value="cancel" aria-label="Закрити">×</button>
+        <p class="modal-kicker">адміністративний доступ</p>
+        <h2>Вхід адміністратора</h2>
+        <label>Логін<input type="text" autocomplete="username" /></label>
+        <label>Пароль<input type="password" autocomplete="current-password" /></label>
+        <button class="submit" value="default">Увійти</button>
+      </form>
+    </dialog>
+  </div>
+  <script src="./app.js"></script>
+</body>
+</html>

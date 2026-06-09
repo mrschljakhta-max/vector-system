@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ПЕЛЕНГ — вхід</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="page official-page">
+    <div class="brand-panel">
+      <div class="brand-kicker">система радіоелектронної боротьби</div>
+      <h1>ПЕЛЕНГ</h1>
+      <button class="entry-btn" id="openLogin" type="button">
+        <span>Вхід</span><i></i><span class="arrow">→</span>
+      </button>
+    </div>
+
+    <dialog class="login-modal" id="loginModal">
+      <form method="dialog" class="login-card">
+        <button class="close" value="cancel" aria-label="Закрити">×</button>
+        <p class="modal-kicker">офіційний доступ</p>
+        <h2>Вхід до системи</h2>
+        <label>Логін<input type="text" autocomplete="username" /></label>
+        <label>Пароль<input type="password" autocomplete="current-password" /></label>
+        <button class="submit" value="default">Увійти</button>
+      </form>
+    </dialog>
+  </div>
+  <script src="./app.js"></script>
+</body>
+</html>
