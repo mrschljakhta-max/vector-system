@@ -269,17 +269,4 @@ body{overflow:hidden;background:#f2f2ef}
   .auth-panel{width:100%;max-height:calc(100svh - 96px)}
 }
 
-.official-link{
-  position:fixed;
-  z-index:10;
-  left:32px;
-  bottom:28px;
-  color:var(--muted);
-  text-decoration:none;
-  text-transform:uppercase;
-  letter-spacing:.22em;
-  font-size:13px;
-  font-weight:700;
-  transition:color .2s ease, transform .2s ease;
-}
 .official-link:hover{color:var(--accent);transform:translateY(-1px)}
