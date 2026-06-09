@@ -6,6 +6,11 @@ const openLogin = document.querySelector('#openLogin');
 const closeModal = document.querySelector('#closeModal');
 const loginForm = document.querySelector('#loginForm');
 
+const DEFAULT_ADMIN = {
+  login: 'admin',
+  password: 'Vector@2026!'
+};
+
 function applyTheme(theme) {
   root.dataset.theme = theme;
   localStorage.setItem('vector-theme', theme);
@@ -34,6 +39,25 @@ function closeAuth() {
   openLogin?.focus();
 }
 
+function showAuthMessage(message, type = 'error') {
+  if (!loginForm) return;
+
+  let messageBox = loginForm.querySelector('.auth-message');
+
+  if (!messageBox) {
+    messageBox = document.createElement('p');
+    messageBox.className = 'auth-message';
+    loginForm.appendChild(messageBox);
+  }
+
+  messageBox.textContent = message;
+  messageBox.dataset.type = type;
+}
+
+function normalizeLogin(value) {
+  return String(value || '').trim();
+}
+
 openLogin?.addEventListener('click', openAuth);
 closeModal?.addEventListener('click', closeAuth);
 
@@ -47,5 +71,21 @@ document.addEventListener('keydown', (event) => {
 
 loginForm?.addEventListener('submit', (event) => {
   event.preventDefault();
-  alert('Адмін-вхід підключимо до Supabase Auth на наступному етапі.');
+
+  const formData = new FormData(loginForm);
+  const login = normalizeLogin(formData.get('login'));
+  const password = String(formData.get('password') || '');
+
+  if (login !== DEFAULT_ADMIN.login || password !== DEFAULT_ADMIN.password) {
+    showAuthMessage('Невірний логін або пароль.', 'error');
+    return;
+  }
+
+  sessionStorage.setItem('vector-admin-auth', 'default-admin');
+  sessionStorage.setItem('vector-admin-login', DEFAULT_ADMIN.login);
+  showAuthMessage('Доступ підтверджено. Відкриваю адмін-панель...', 'success');
+
+  setTimeout(() => {
+    window.location.href = './dashboard.html';
+  }, 450);
 });
