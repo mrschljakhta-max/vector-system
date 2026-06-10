@@ -37,14 +37,11 @@ function showToast(message) {
   copyToast.textContent = message;
   copyToast.classList.add('is-visible');
   window.clearTimeout(showToast.timer);
-  showToast.timer = window.setTimeout(() => {
-    copyToast.classList.remove('is-visible');
-  }, 1800);
+  showToast.timer = window.setTimeout(() => copyToast.classList.remove('is-visible'), 1800);
 }
 
 copyOfficialLink?.addEventListener('click', async () => {
   const officialUrl = new URL('../official/', window.location.href).href;
-
   try {
     await navigator.clipboard.writeText(officialUrl);
     showToast('Посилання скопійовано');
