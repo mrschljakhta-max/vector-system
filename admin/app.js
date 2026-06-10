@@ -86,6 +86,6 @@ loginForm?.addEventListener('submit', (event) => {
   showAuthMessage('Доступ підтверджено. Відкриваю адмін-панель...', 'success');
 
   setTimeout(() => {
-    window.location.href = './dashboard.html';
+    window.location.href = './grant-access.html';
   }, 350);
 });

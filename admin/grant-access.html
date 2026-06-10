@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VECTOR - Admin</title>
+  <title>VECTOR - Надати доступ</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -67,10 +67,56 @@
 
       <p class="copy-toast" id="copyToast" aria-live="polite">Посилання скопійовано</p>
 
-      <section class="admin-page-content admin-page-content--empty">
+      <section class="admin-page-content page-grant-access">
         <header class="admin-page-head">
-          <h1>Панель керування</h1>
+          <h1>Надати доступ</h1>
         </header>
+
+        <form class="grant-card" id="grantAccessForm">
+          <div class="grant-card__intro">
+            <div class="grant-card__intro-icon">
+              <img src="../assets/admin-icons/grant-access.svg" alt="">
+            </div>
+            <p>Заповніть email, роль і створіть персональне setup-посилання для першого входу.</p>
+          </div>
+
+          <div class="grant-form-grid">
+            <label class="field-block">
+              <span class="field-label">Email користувача <b>ⓘ</b></span>
+              <span class="field-control">
+                <span class="field-icon">@</span>
+                <input type="email" name="email" placeholder="operator@example.com" required>
+              </span>
+            </label>
+
+            <label class="field-block">
+              <span class="field-label">Роль користувача <b>ⓘ</b></span>
+              <span class="field-control">
+                <span class="field-icon"><img src="../assets/admin-icons/admin-access.svg" alt=""></span>
+                <select name="role" required>
+                  <option value="demo">Demo — демо-користувач</option>
+                  <option value="user">User — користувач</option>
+                  <option value="analyst">Analyst — аналітик</option>
+                  <option value="admin">Admin — адміністратор</option>
+                </select>
+              </span>
+            </label>
+
+            <label class="field-block field-block--wide">
+              <span class="field-label">Нотатка <em>(необов'язково)</em> <b>ⓘ</b></span>
+              <span class="field-control field-control--textarea">
+                <span class="field-icon"><img src="../assets/admin-icons/requests.svg" alt=""></span>
+                <textarea name="note" maxlength="255" placeholder="За потреби: підрозділ, причина доступу, примітка..."></textarea>
+                <span class="field-counter">0 / 255</span>
+              </span>
+            </label>
+          </div>
+
+          <button class="grant-submit" type="submit">
+            <img src="../assets/admin-icons/logs.svg" alt="">
+            <span>Надіслати запрошення</span>
+          </button>
+        </form>
       </section>
     </section>
   </main>
