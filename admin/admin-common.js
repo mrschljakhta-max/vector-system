@@ -60,31 +60,32 @@ grantAccessForm?.querySelector('textarea')?.addEventListener('input', (event) =>
   if (counter) counter.textContent = `${event.target.value.length} / 255`;
 });
 
-
 const roleSelect = document.querySelector('[data-role-select]');
 
 if (roleSelect) {
   const roleButton = roleSelect.querySelector('[data-role-button]');
-  const roleMenu = roleSelect.querySelector('[data-role-menu]');
   const roleLabel = roleSelect.querySelector('[data-role-label]');
   const roleValue = roleSelect.querySelector('[data-role-value]');
   const roleOptions = roleSelect.querySelectorAll('.role-select__option');
 
-  function closeRoleSelect() {
+  const closeRoleSelect = () => {
     roleSelect.classList.remove('is-open');
     roleButton?.setAttribute('aria-expanded', 'false');
-  }
+  };
 
-  roleButton?.addEventListener('click', () => {
+  roleButton?.addEventListener('click', (event) => {
+    event.preventDefault();
     const isOpen = roleSelect.classList.toggle('is-open');
     roleButton.setAttribute('aria-expanded', String(isOpen));
   });
 
   roleOptions.forEach((option) => {
     option.addEventListener('click', () => {
+      const title = option.querySelector('.role-select__option-title')?.textContent.trim() || '';
+      const desc = option.querySelector('.role-select__option-desc')?.textContent.trim() || '';
       roleOptions.forEach((item) => item.classList.remove('is-selected'));
       option.classList.add('is-selected');
-      if (roleLabel) roleLabel.textContent = option.textContent.trim();
+      if (roleLabel) roleLabel.textContent = `${title} — ${desc}`;
       if (roleValue) roleValue.value = option.dataset.value || '';
       closeRoleSelect();
     });

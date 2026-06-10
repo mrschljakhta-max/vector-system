@@ -60,16 +60,16 @@
         <span class="theme-toggle__text" id="themeLabel">Світла</span>
       </button>
 
+      <button class="official-copy-btn" id="copyOfficialLink" type="button" aria-label="Скопіювати посилання на офіційний сайт">
+        <img class="official-copy-btn__logo official-copy-btn__logo--light" src="../assets/logo-dark.png" alt="">
+        <img class="official-copy-btn__logo official-copy-btn__logo--dark" src="../assets/logo-light.png" alt="">
+      </button>
+      <p class="copy-toast" id="copyToast" aria-live="polite">Посилання скопійовано</p>
+
       <section class="admin-page-content page-grant-access">
         <header class="admin-page-head">
           <h1>Надати доступ</h1>
         </header>
-
-        <button class="official-copy-btn" id="copyOfficialLink" type="button" aria-label="Скопіювати посилання на офіційний сайт">
-          <img class="official-copy-btn__logo official-copy-btn__logo--light" src="../assets/logo-dark.png" alt="">
-          <img class="official-copy-btn__logo official-copy-btn__logo--dark" src="../assets/logo-light.png" alt="">
-        </button>
-        <p class="copy-toast" id="copyToast" aria-live="polite">Посилання скопійовано</p>
 
         <form class="grant-card" id="grantAccessForm">
           <div class="grant-card__intro">
@@ -94,14 +94,22 @@
                 <span class="field-icon"><img src="../assets/admin-icons/admin-access.svg" alt=""></span>
                 <input type="hidden" name="role" value="demo" data-role-value>
                 <button class="role-select__button" type="button" aria-haspopup="listbox" aria-expanded="false" data-role-button>
-                  <span data-role-label>Demo — демо-користувач</span>
-                  <img class="role-select__arrow" src="../assets/admin-icons/requests.svg" alt="">
+                  <span class="role-select__current" data-role-label>Демо — тільки перегляд</span>
+                  <span class="role-select__chevron">⌄</span>
                 </button>
                 <span class="role-select__menu" role="listbox" data-role-menu>
-                  <button class="role-select__option is-selected" type="button" role="option" data-value="demo">Demo — демо-користувач</button>
-                  <button class="role-select__option" type="button" role="option" data-value="user">User — користувач</button>
-                  <button class="role-select__option" type="button" role="option" data-value="analyst">Analyst — аналітик</button>
-                  <button class="role-select__option" type="button" role="option" data-value="admin">Admin — адміністратор</button>
+                  <button class="role-select__option is-selected" type="button" role="option" data-value="demo">
+                    <span class="role-select__option-title">Демо</span>
+                    <span class="role-select__option-desc">тільки перегляд</span>
+                  </button>
+                  <button class="role-select__option" type="button" role="option" data-value="operator">
+                    <span class="role-select__option-title">Оператор</span>
+                    <span class="role-select__option-desc">робота без редагування довідників</span>
+                  </button>
+                  <button class="role-select__option" type="button" role="option" data-value="supervisor">
+                    <span class="role-select__option-title">Супервайзер</span>
+                    <span class="role-select__option-desc">повний доступ</span>
+                  </button>
                 </span>
               </span>
             </label>
