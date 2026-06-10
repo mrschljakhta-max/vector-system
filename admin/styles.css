@@ -741,3 +741,94 @@ body{overflow:hidden;background:#f2f2ef}
   .page-grant-access .official-copy-btn{top:80px;width:58px;height:58px}
   .official-copy-btn__logo{width:34px;height:34px}
 }
+
+
+/* Grant access refinements: custom role dropdown and official link button */
+.page-grant-access .official-copy-btn{
+  display:flex !important;
+  top:118px;
+  right:92px;
+}
+.role-select{
+  position:relative;
+  overflow:visible;
+}
+.role-select__button{
+  width:100%;
+  border:0;
+  outline:0;
+  background:transparent;
+  color:var(--input-text);
+  font-family:inherit;
+  font-size:18px;
+  font-weight:600;
+  letter-spacing:.04em;
+  padding:0 54px 0 20px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  cursor:pointer;
+  text-align:left;
+}
+.role-select__arrow{
+  position:absolute;
+  right:20px;
+  width:18px;
+  height:18px;
+  filter:brightness(0) saturate(100%) invert(56%) sepia(78%) saturate(763%) hue-rotate(352deg) brightness(98%) contrast(91%);
+  transform:rotate(180deg);
+  transition:transform .18s ease;
+}
+.role-select.is-open .role-select__arrow{
+  transform:rotate(0deg);
+}
+.role-select__menu{
+  position:absolute;
+  z-index:30;
+  left:66px;
+  right:0;
+  top:calc(100% + 8px);
+  display:grid;
+  padding:8px;
+  border:1px solid rgba(215,130,25,.38);
+  background:rgba(18,21,24,.96);
+  box-shadow:0 22px 70px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.06);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  opacity:0;
+  transform:translateY(-8px);
+  pointer-events:none;
+  clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px);
+  transition:opacity .18s ease, transform .18s ease;
+}
+:root[data-theme="light"] .role-select__menu{
+  background:rgba(246,246,242,.96);
+  box-shadow:0 22px 70px rgba(20,22,26,.18), inset 0 1px 0 rgba(255,255,255,.72);
+}
+.role-select.is-open .role-select__menu{
+  opacity:1;
+  transform:translateY(0);
+  pointer-events:auto;
+}
+.role-select__option{
+  min-height:44px;
+  border:0;
+  background:transparent;
+  color:var(--input-text);
+  font-family:inherit;
+  font-size:17px;
+  font-weight:600;
+  letter-spacing:.05em;
+  text-align:left;
+  padding:0 16px;
+  cursor:pointer;
+  clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);
+}
+.role-select__option:hover,
+.role-select__option.is-selected{
+  background:rgba(215,130,25,.14);
+  color:var(--accent);
+}
+.grant-submit img{
+  filter:brightness(0) invert(1) !important;
+}

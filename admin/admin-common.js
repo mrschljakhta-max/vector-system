@@ -59,3 +59,42 @@ grantAccessForm?.querySelector('textarea')?.addEventListener('input', (event) =>
   const counter = grantAccessForm.querySelector('.field-counter');
   if (counter) counter.textContent = `${event.target.value.length} / 255`;
 });
+
+
+const roleSelect = document.querySelector('[data-role-select]');
+
+if (roleSelect) {
+  const roleButton = roleSelect.querySelector('[data-role-button]');
+  const roleMenu = roleSelect.querySelector('[data-role-menu]');
+  const roleLabel = roleSelect.querySelector('[data-role-label]');
+  const roleValue = roleSelect.querySelector('[data-role-value]');
+  const roleOptions = roleSelect.querySelectorAll('.role-select__option');
+
+  function closeRoleSelect() {
+    roleSelect.classList.remove('is-open');
+    roleButton?.setAttribute('aria-expanded', 'false');
+  }
+
+  roleButton?.addEventListener('click', () => {
+    const isOpen = roleSelect.classList.toggle('is-open');
+    roleButton.setAttribute('aria-expanded', String(isOpen));
+  });
+
+  roleOptions.forEach((option) => {
+    option.addEventListener('click', () => {
+      roleOptions.forEach((item) => item.classList.remove('is-selected'));
+      option.classList.add('is-selected');
+      if (roleLabel) roleLabel.textContent = option.textContent.trim();
+      if (roleValue) roleValue.value = option.dataset.value || '';
+      closeRoleSelect();
+    });
+  });
+
+  document.addEventListener('click', (event) => {
+    if (!roleSelect.contains(event.target)) closeRoleSelect();
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') closeRoleSelect();
+  });
+}
