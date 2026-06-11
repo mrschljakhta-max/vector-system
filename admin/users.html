@@ -1,72 +1,32 @@
 <!doctype html>
 <html lang="uk" data-theme="light">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VECTOR - Користувачі</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./styles.css" />
-  <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png" />
-  <link rel="icon" type="image/png" sizes="192x192" href="../assets/favicon-192.png" />
-  <link rel="apple-touch-icon" href="../assets/favicon-192.png" />
-  <meta name="theme-color" content="#111418" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VECTOR - Користувачі</title>
+<link rel="stylesheet" href="./styles.css">
 </head>
 <body>
-  <main class="admin-layout">
-    <aside class="admin-sidebar" aria-label="Навігація адмін-панелі">
-      <a class="admin-sidebar__logo" href="./grant-access.html" aria-label="VECTOR admin dashboard">
-        <img class="admin-sidebar__logo-img admin-sidebar__logo-img--light" src="../assets/logo-dark.png" alt="VECTOR">
-        <img class="admin-sidebar__logo-img admin-sidebar__logo-img--dark" src="../assets/logo-light.png" alt="VECTOR">
-      </a>
+<section class="users-page">
+  <h1 class="users-title">КОРИСТУВАЧІ</h1>
 
-      <nav class="admin-nav">
-        <a class="admin-nav__item" href="./grant-access.html" data-page="grant-access">
-          <span class="admin-nav__icon"><img src="../assets/admin-icons/grant-access.svg" alt=""></span>
-          <span>Надати доступ</span>
-        </a>
-        <a class="admin-nav__item is-active" href="./users.html" data-page="users">
-          <span class="admin-nav__icon"><img src="../assets/admin-icons/users.svg" alt=""></span>
-          <span>Користувачі</span>
-        </a>
-        <a class="admin-nav__item" href="./admin-access.html" data-page="admin-access">
-          <span class="admin-nav__icon"><img src="../assets/admin-icons/admin-access.svg" alt=""></span>
-          <span>Адмін-доступ</span>
-        </a>
-        <a class="admin-nav__item" href="./requests.html" data-page="requests">
-          <span class="admin-nav__icon"><img src="../assets/admin-icons/requests.svg" alt=""></span>
-          <span>Заявки</span>
-        </a>
-        <a class="admin-nav__item" href="./logs.html" data-page="logs">
-          <span class="admin-nav__icon"><img src="../assets/admin-icons/logs.svg" alt=""></span>
-          <span>Логування</span>
-        </a>
-        <a class="admin-nav__item" href="./settings.html" data-page="settings">
-          <span class="admin-nav__icon"><img src="../assets/admin-icons/settings.svg" alt=""></span>
-          <span>Налаштування</span>
-        </a>
-      </nav>
+  <div class="users-panel">
+    <div class="users-panel__top">
+      <p>Перегляд, керування та контроль доступу користувачів системи.</p>
+      <button class="users-refresh">ОНОВИТИ</button>
+    </div>
 
-      <button class="admin-nav__logout" id="logoutBtn" type="button">
-        <span class="admin-nav__icon"><img src="../assets/admin-icons/logout.svg" alt=""></span>
-        <span>Вийти</span>
-      </button>
-    </aside>
+    <div class="users-stats">
+      <div class="users-stat"><span>Всього користувачів</span><strong>5</strong></div>
+      <div class="users-stat"><span>Активних</span><strong>4</strong></div>
+      <div class="users-stat"><span>На етапі реєстрації</span><strong>1</strong></div>
+    </div>
 
-    <section class="admin-workspace" aria-label="Робоча область адмін-панелі">
-      <button class="theme-toggle admin-theme-toggle" id="themeToggle" type="button" aria-label="Перемкнути тему">
-        <span class="theme-toggle__track"><span class="theme-toggle__dot"></span></span>
-        <span class="theme-toggle__text" id="themeLabel">Світла</span>
-      </button>
-
-      <section class="admin-page-content admin-page-content--empty">
-        <header class="admin-page-head">
-          <h1>Користувачі</h1>
-        </header>
-      </section>
-    </section>
-  </main>
-  <script src="./admin-common.js"></script>
+    <div class="users-filters">
+      <input type="text" placeholder="Логін, email або роль...">
+      <select><option>Усі користувачі</option></select>
+    </div>
+  </div>
+</section>
 </body>
 </html>
