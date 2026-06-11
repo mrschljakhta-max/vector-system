@@ -99,3 +99,36 @@ if (roleSelect) {
     if (event.key === 'Escape') closeRoleSelect();
   });
 }
+
+// Users page filters/demo refresh
+const usersSearch = document.querySelector('#usersSearch');
+const usersStatusFilter = document.querySelector('#usersStatusFilter');
+const usersRows = Array.from(document.querySelectorAll('[data-user-row]'));
+const usersEmpty = document.querySelector('#usersEmpty');
+const usersRefresh = document.querySelector('#usersRefresh');
+
+function applyUsersFilter() {
+  if (!usersRows.length) return;
+  const query = String(usersSearch?.value || '').trim().toLowerCase();
+  const status = usersStatusFilter?.value || 'all';
+  let visibleCount = 0;
+
+  usersRows.forEach((row) => {
+    const matchesQuery = !query || String(row.dataset.search || '').toLowerCase().includes(query);
+    const matchesStatus = status === 'all' || row.dataset.status === status;
+    const isVisible = matchesQuery && matchesStatus;
+    row.hidden = !isVisible;
+    if (isVisible) visibleCount += 1;
+  });
+
+  if (usersEmpty) usersEmpty.hidden = visibleCount !== 0;
+}
+
+usersSearch?.addEventListener('input', applyUsersFilter);
+usersStatusFilter?.addEventListener('change', applyUsersFilter);
+usersRefresh?.addEventListener('click', () => {
+  if (usersSearch) usersSearch.value = '';
+  if (usersStatusFilter) usersStatusFilter.value = 'all';
+  applyUsersFilter();
+  showToast('Список оновлено');
+});
