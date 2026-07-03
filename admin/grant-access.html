@@ -1,14 +1,54 @@
 <!doctype html>
-<html lang="uk">
+<html lang="uk" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>VECTOR - Доступ</title>
-  <meta http-equiv="refresh" content="0; url=./access.html" />
-  <script>window.location.replace('./access.html');</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css" />
+  <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png" />
+  <meta name="theme-color" content="#111418" />
 </head>
 <body>
-  <p>Перехід на сторінку доступу...</p>
-  <p><a href="./access.html">Відкрити сторінку доступу</a></p>
+  <main class="admin-shell">
+    <aside class="simple-sidebar">
+      <a class="simple-logo" href="./access.html">VECTOR</a>
+      <nav class="simple-nav">
+        <a class="is-active" href="./grant-access.html">Доступ</a>
+        <a href="./users.html">Користувачі</a>
+      </nav>
+      <button class="admin-nav__logout" id="logoutBtn" type="button">Вийти</button>
+    </aside>
+
+    <section class="simple-workspace">
+      <button class="theme-toggle admin-theme-toggle" id="themeToggle" type="button" aria-label="Перемкнути тему">
+        <span class="theme-toggle__track"><span class="theme-toggle__dot"></span></span>
+        <span class="theme-toggle__text" id="themeLabel">Темна</span>
+      </button>
+
+      <header class="simple-head">
+        <div>
+          <p class="simple-kicker">локальна авторизація</p>
+          <h1>Електронна пошта і пароль</h1>
+        </div>
+        <a class="simple-link" href="./users.html">Зареєстровані користувачі</a>
+      </header>
+
+      <section class="simple-card">
+        <h2>Створити користувача основного сайту</h2>
+        <p>Запис зберігається локально в браузері та використовується для входу на основний сайт VECTOR.</p>
+        <form class="local-user-form" id="localUserForm">
+          <label><span>Email / логін</span><input type="email" name="email" placeholder="user@gmail.com" required></label>
+          <label><span>Пароль</span><input type="text" name="password" placeholder="Введіть пароль" required></label>
+          <label><span>Маркер</span><input type="text" name="marker" placeholder="RREB-01"></label>
+          <label><span>Роль</span><select name="role"><option value="user">Користувач</option><option value="operator">Оператор</option><option value="admin">Адміністратор</option></select></label>
+          <button class="submit-btn" type="submit">Створити користувача</button>
+        </form>
+      </section>
+    </section>
+  </main>
+  <script src="./admin-common.js"></script>
 </body>
 </html>
