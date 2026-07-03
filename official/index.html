@@ -8,8 +8,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./styles.css" />
-  <link rel="stylesheet" href="./landing-fix.css?v=20260703-3" />
-  <link rel="stylesheet" href="./workspace-nav.css?v=20260703-1" />
+  <link rel="stylesheet" href="./landing-fix.css?v=20260703-4" />
+  <link rel="stylesheet" href="./workspace-nav.css?v=20260703-2" />
   <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png" />
   <link rel="icon" type="image/png" sizes="192x192" href="../assets/favicon-192.png" />
   <link rel="apple-touch-icon" href="../assets/favicon-192.png" />
@@ -23,64 +23,32 @@
     </picture>
 
     <button class="theme-toggle" id="themeToggle" type="button" aria-label="Перемкнути тему">
-      <span class="theme-toggle__track"><span class="theme-toggle__dot"></span></span>
-      <span class="theme-toggle__text" id="themeLabel">Темна</span>
+      <span class="theme-toggle__track"><span class="theme-toggle__dot"></span></span><span class="theme-toggle__text" id="themeLabel">Темна</span>
     </button>
 
-    <section class="landing" id="landingScreen">
-      <button class="entry-trigger" id="openLogin" type="button" aria-haspopup="dialog">
-        <span class="entry-trigger__line"></span><span class="entry-trigger__text">Вхід</span><span class="entry-trigger__line"></span>
-      </button>
-    </section>
+    <section class="landing" id="landingScreen"><button class="entry-trigger" id="openLogin" type="button" aria-haspopup="dialog"><span class="entry-trigger__line"></span><span class="entry-trigger__text">Вхід</span><span class="entry-trigger__line"></span></button></section>
 
     <section class="auth-modal" id="authModal" aria-hidden="true">
       <div class="auth-panel" role="dialog" aria-modal="true" aria-labelledby="authTitle">
         <button class="modal-close" id="closeModal" type="button" aria-label="Закрити">×</button>
         <div class="auth-head"><button class="auth-tab is-active" type="button" data-auth-mode="login">Вхід</button><button class="auth-tab" type="button" data-auth-mode="register">Подати заявку</button></div>
-        <form class="auth-form is-active" id="loginForm" autocomplete="on">
-          <h2 id="authTitle">VECTOR</h2>
-          <label><span>Логін</span><input type="text" name="login" placeholder="Введіть логін" autocomplete="username" required /></label>
-          <label><span>Пароль</span><input type="password" name="password" placeholder="Введіть пароль" autocomplete="current-password" required /></label>
-          <button class="submit-btn" type="submit">Увійти</button>
-          <p class="auth-note">Доступ створюється на адмін-сайті.</p>
-        </form>
-        <form class="auth-form" id="registerForm" autocomplete="on">
-          <h2>Подати заявку</h2>
-          <label><span>Логін</span><input type="text" name="login" placeholder="Створіть логін" autocomplete="username" required /></label>
-          <label><span>Email</span><input type="email" name="email" placeholder="name@example.com" autocomplete="email" required /></label>
-          <label><span>Коментар</span><textarea name="comment" placeholder="Додатковий коментар"></textarea></label>
-          <button class="submit-btn" type="submit">Надіслати заявку</button>
-        </form>
+        <form class="auth-form is-active" id="loginForm" autocomplete="on"><h2 id="authTitle">VECTOR</h2><label><span>Логін</span><input type="text" name="login" placeholder="Введіть логін" autocomplete="username" required /></label><label><span>Пароль</span><input type="password" name="password" placeholder="Введіть пароль" autocomplete="current-password" required /></label><button class="submit-btn" type="submit">Увійти</button><p class="auth-note">Доступ створюється на адмін-сайті.</p></form>
+        <form class="auth-form" id="registerForm" autocomplete="on"><h2>Подати заявку</h2><label><span>Логін</span><input type="text" name="login" placeholder="Створіть логін" autocomplete="username" required /></label><label><span>Email</span><input type="email" name="email" placeholder="name@example.com" autocomplete="email" required /></label><label><span>Коментар</span><textarea name="comment" placeholder="Додатковий коментар"></textarea></label><button class="submit-btn" type="submit">Надіслати заявку</button></form>
       </div>
     </section>
 
     <section class="workspace vector-workspace" id="workspace" aria-hidden="true">
       <aside class="hover-nav hover-nav--left" aria-label="Робоча навігація">
-        <button class="hover-nav__item is-active nav__item" data-section="map" type="button">
-          <img src="../assets/map-pin-share.svg" alt=""><span>Карта</span>
-        </button>
-        <button class="hover-nav__item nav__item" data-section="refs" type="button">
-          <img src="../assets/book.svg" alt=""><span>Бібліотека</span>
-        </button>
+        <button class="hover-nav__item is-active nav__item" data-section="map" type="button"><img src="../assets/map-pin-share.svg" alt=""><span>Карта</span></button>
+        <button class="hover-nav__item nav__item" data-section="refs" type="button"><img src="../assets/book-icon.svg" alt=""><span>Бібліотека</span></button>
       </aside>
-
       <aside class="hover-nav hover-nav--right" aria-label="Резервна навігація"></aside>
-
       <section class="map-shell content">
-        <article class="section is-active" id="map" data-title="Карта">
-          <div class="map-workspace">
-            <div class="map-watermark">VECTOR MAP</div>
-            <div class="map-center-card"><h1>Карта</h1><p>Робоча область для шарів, об'єктів, маршрутів і зон прикриття.</p></div>
-          </div>
-        </article>
-        <article class="section library-section" id="refs" data-title="Бібліотека">
-          <header class="library-head"><p class="eyebrow">Бібліотека</p><h1>Довідники та файли</h1><p>Місце для завантаження довідників, таблиць, карт, схем та інших матеріалів.</p></header>
-          <div class="upload-grid" id="uploadGrid"></div>
-          <div class="table-card"><div class="table-card__head"><h4>Реєстр завантажених файлів</h4><button class="ghost-btn" id="clearFiles" type="button">Очистити</button></div><div class="file-list" id="fileList">Файли ще не додані.</div></div>
-        </article>
+        <article class="section is-active" id="map" data-title="Карта"><div class="map-workspace"><div class="map-watermark">VECTOR MAP</div><div class="map-center-card"><h1>Карта</h1><p>Робоча область для шарів, об'єктів, маршрутів і зон прикриття.</p></div></div></article>
+        <article class="section library-section" id="refs" data-title="Бібліотека"><header class="library-head"><p class="eyebrow">Бібліотека</p><h1>Довідники та файли</h1><p>Місце для завантаження довідників, таблиць, карт, схем та інших матеріалів.</p></header><div class="upload-grid" id="uploadGrid"></div><div class="table-card"><div class="table-card__head"><h4>Реєстр завантажених файлів</h4><button class="ghost-btn" id="clearFiles" type="button">Очистити</button></div><div class="file-list" id="fileList">Файли ще не додані.</div></div></article>
       </section>
     </section>
   </main>
-  <script src="./app.js"></script>
+  <script src="./app.js?v=20260703-2"></script>
 </body>
 </html>
