@@ -1,13 +1,39 @@
-/* Official landing overrides */
-.official-page {
-  background-position: center center !important;
-  background-size: cover !important;
+/* Official landing overrides: stable full-screen image layer */
+.official-start {
+  background: #111418 !important;
+  background-image: none !important;
+}
+
+.official-start::after {
+  display: none !important;
+}
+
+.landing-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  display: block;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: #111418;
+}
+
+.landing-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center center;
+  display: block;
 }
 
 #landingScreen {
+  position: relative !important;
+  z-index: 2 !important;
   min-height: 100vh !important;
   display: block !important;
   padding: 0 !important;
+  background: transparent !important;
 }
 
 #landingScreen .landing__brand,
@@ -23,15 +49,15 @@
 #openLogin.entry-trigger {
   position: absolute !important;
   z-index: 25 !important;
-  right: 19vw !important;
-  top: 68% !important;
+  right: 13.5vw !important;
+  top: 70% !important;
   transform: translate(50%, -50%) !important;
   padding: 16px 26px !important;
   min-width: 340px !important;
   border: 1px solid rgba(255,255,255,.62) !important;
-  background: rgba(10, 12, 15, .28) !important;
-  backdrop-filter: blur(8px) !important;
-  -webkit-backdrop-filter: blur(8px) !important;
+  background: rgba(10, 12, 15, .18) !important;
+  backdrop-filter: blur(4px) !important;
+  -webkit-backdrop-filter: blur(4px) !important;
   clip-path: polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px) !important;
 }
 
@@ -45,7 +71,22 @@
   background: rgba(215, 130, 25, .10) !important;
 }
 
+.workspace.is-open ~ .landing-bg,
+.workspace.is-open + .landing-bg {
+  display: none !important;
+}
+
+@media (max-aspect-ratio: 16/9) {
+  .landing-bg img {
+    object-fit: cover;
+  }
+}
+
 @media (max-width: 760px) {
+  .landing-bg img {
+    object-fit: cover;
+  }
+
   #openLogin.entry-trigger {
     left: 22px !important;
     right: 22px !important;
