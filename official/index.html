@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="./landing-fix.css?v=20260703-1" />
   <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png" />
   <link rel="icon" type="image/png" sizes="192x192" href="../assets/favicon-192.png" />
   <link rel="apple-touch-icon" href="../assets/favicon-192.png" />
@@ -78,38 +79,11 @@
         </header>
 
         <article class="section is-active" id="dashboard" data-title="Головна">
-          <div class="hero-card">
-            <p class="eyebrow">Єдина логіка</p>
-            <h3>Забезпечення + бойова робота аналізуються паралельно</h3>
-            <p>Система збирає довідники, формує поточний стан, аналізує проблеми, планує заходи та готує основу для документа.</p>
-          </div>
-          <div class="kpi-grid">
-            <div class="metric"><span>Довідники</span><strong id="filesCount">0</strong><small>завантажено локально</small></div>
-            <div class="metric"><span>Напрямки</span><strong>2</strong><small>забезпечення / бойова робота</small></div>
-            <div class="metric"><span>Документ</span><strong>2026</strong><small>план роботи служби</small></div>
-          </div>
+          <div class="hero-card"><p class="eyebrow">Єдина логіка</p><h3>Забезпечення + бойова робота аналізуються паралельно</h3><p>Система збирає довідники, формує поточний стан, аналізує проблеми, планує заходи та готує основу для документа.</p></div>
+          <div class="kpi-grid"><div class="metric"><span>Довідники</span><strong id="filesCount">0</strong><small>завантажено локально</small></div><div class="metric"><span>Напрямки</span><strong>2</strong><small>забезпечення / бойова робота</small></div><div class="metric"><span>Документ</span><strong>2026</strong><small>план роботи служби</small></div></div>
         </article>
-
-        <article class="section" id="refs" data-title="Довідники">
-          <div class="section-head">
-            <p class="eyebrow">Бібліотека даних</p>
-            <h3>Завантаження довідників</h3>
-            <p>Цей розділ є місцем збору файлів, з яких будуватиметься аналітика VECTOR.</p>
-          </div>
-          <div class="upload-grid" id="uploadGrid"></div>
-          <div class="table-card">
-            <div class="table-card__head"><h4>Реєстр завантажених файлів</h4><button class="ghost-btn" id="clearFiles" type="button">Очистити</button></div>
-            <div class="file-list" id="fileList">Файли ще не додані.</div>
-          </div>
-        </article>
-
-        <article class="section" id="current" data-title="Поточний стан">
-          <div class="two-column">
-            <div class="glass-card"><h3>Забезпечення</h3><p>ОВТ, штат/факт, справність, втрати, ремонти, ІКС, навчання.</p></div>
-            <div class="glass-card"><h3>Бойова робота</h3><p>ПУ, оповіщення, заявки, прикриття ВП/СП, штаби, маршрути, РЗ/РО, коридори.</p></div>
-          </div>
-        </article>
-
+        <article class="section" id="refs" data-title="Довідники"><div class="section-head"><p class="eyebrow">Бібліотека даних</p><h3>Завантаження довідників</h3><p>Цей розділ є місцем збору файлів, з яких будуватиметься аналітика VECTOR.</p></div><div class="upload-grid" id="uploadGrid"></div><div class="table-card"><div class="table-card__head"><h4>Реєстр завантажених файлів</h4><button class="ghost-btn" id="clearFiles" type="button">Очистити</button></div><div class="file-list" id="fileList">Файли ще не додані.</div></div></article>
+        <article class="section" id="current" data-title="Поточний стан"><div class="two-column"><div class="glass-card"><h3>Забезпечення</h3><p>ОВТ, штат/факт, справність, втрати, ремонти, ІКС, навчання.</p></div><div class="glass-card"><h3>Бойова робота</h3><p>ПУ, оповіщення, заявки, прикриття ВП/СП, штаби, маршрути, РЗ/РО, коридори.</p></div></div></article>
         <article class="section" id="analysis" data-title="Аналіз"><div class="matrix-card"><h3>Матриця аналізу</h3><div class="matrix-row matrix-head"><span>Напрямок</span><span>Проблема</span><span>Наслідок</span><span>Рішення</span></div><div class="matrix-row"><span>Забезпечення</span><span>дефіцит / ремонт / ІКС</span><span>зниження готовності</span><span>закупівля, ремонт, навчання</span></div><div class="matrix-row"><span>Бойова робота</span><span>неприкриті об'єкти / час реакції</span><span>ризик ураження</span><span>оптимізація прикриття і коридорів</span></div></div></article>
         <article class="section" id="plan" data-title="План заходів"><div class="table-card"><h3>План заходів на 2026 рік</h3><p>Тут буде таблиця: захід → поточний стан → дія → строк → відповідальний → очікуваний ефект → KPI.</p></div></article>
         <article class="section" id="map" data-title="Карта"><div class="map-placeholder"><div><h3>Картографічний модуль</h3><p>Місце для шарів ВП/СП, штабів, логістичних маршрутів, РЗ/РО, станцій РЕБ/ПДТР та зон прикриття.</p></div></div></article>
