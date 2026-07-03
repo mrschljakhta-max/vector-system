@@ -1,0 +1,194 @@
+.vector-workspace {
+  position: relative !important;
+  z-index: 6 !important;
+  display: none;
+  width: 100vw;
+  height: 100vh;
+  padding: 0 !important;
+  overflow: hidden;
+  background: #111418;
+}
+
+.vector-workspace.is-open {
+  display: block !important;
+}
+
+.official-start:has(.vector-workspace.is-open) .landing-bg,
+.official-start:has(.vector-workspace.is-open) #landingScreen {
+  display: none !important;
+}
+
+.hover-nav {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  z-index: 30;
+  width: 72px;
+  background: rgba(9, 11, 14, .72);
+  border: 1px solid rgba(255,255,255,.10);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  transition: width .24s ease, background .24s ease;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 14px;
+  padding: 18px 12px;
+}
+
+.hover-nav--left { left: 0; border-left: 0; }
+.hover-nav--right { right: 0; border-right: 0; }
+
+.hover-nav:hover { width: 250px; background: rgba(9, 11, 14, .88); }
+.hover-nav--right:hover { width: 180px; }
+
+.hover-nav__item {
+  width: 100%;
+  height: 56px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.045);
+  color: #f4f2ee;
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  align-items: center;
+  gap: 10px;
+  padding: 0 12px;
+  text-align: left;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  clip-path: polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);
+}
+
+.hover-nav__item:hover,
+.hover-nav__item.is-active {
+  border-color: rgba(215,130,25,.72);
+  color: #d78219;
+  background: rgba(215,130,25,.10);
+}
+
+.hover-nav__item img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+  opacity: .92;
+}
+
+.hover-nav__item.is-active img,
+.hover-nav__item:hover img {
+  filter: sepia(1) saturate(4) hue-rotate(350deg) brightness(1.1);
+}
+
+.hover-nav__item span {
+  opacity: 0;
+  white-space: nowrap;
+  transform: translateX(-8px);
+  transition: opacity .18s ease, transform .18s ease;
+}
+
+.hover-nav:hover .hover-nav__item span {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.map-shell {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  background: #101418 !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  clip-path: none !important;
+}
+
+.map-shell .section {
+  width: 100%;
+  height: 100%;
+}
+
+.map-workspace {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  background:
+    radial-gradient(circle at 50% 52%, rgba(215,130,25,.12), transparent 22%),
+    linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(255,255,255,.035) 1px, transparent 1px),
+    #111418;
+  background-size: auto, 64px 64px, 64px 64px, auto;
+}
+
+.map-workspace::before {
+  content: "";
+  position: absolute;
+  inset: 72px;
+  border: 1px solid rgba(215,130,25,.18);
+  pointer-events: none;
+}
+
+.map-watermark {
+  position: absolute;
+  right: 110px;
+  bottom: 70px;
+  color: rgba(255,255,255,.055);
+  font-size: 96px;
+  font-weight: 700;
+  letter-spacing: .22em;
+}
+
+.map-center-card {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(520px, calc(100vw - 220px));
+  padding: 26px 30px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(18, 22, 26, .72);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  text-align: center;
+  clip-path: polygon(16px 0,100% 0,100% calc(100% - 16px),calc(100% - 16px) 100%,0 100%,0 16px);
+}
+
+.map-center-card h1,
+.library-head h1 {
+  margin: 0 0 8px;
+  font-size: 44px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.map-center-card p,
+.library-head p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 18px;
+}
+
+.library-section {
+  overflow: auto !important;
+  padding: 56px 110px 56px 110px !important;
+  background: #111418;
+}
+
+.library-head {
+  margin: 0 0 26px;
+}
+
+@media (max-width: 760px) {
+  .hover-nav { width: 58px; }
+  .hover-nav:hover { width: 200px; }
+  .hover-nav__item { grid-template-columns: 34px 1fr; padding: 0 10px; }
+  .hover-nav__item img { width: 24px; height: 24px; }
+  .library-section { padding: 44px 76px !important; }
+  .map-center-card { width: calc(100vw - 150px); }
+  .map-watermark { display: none; }
+}
