@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="uk" data-theme="light">
+<html lang="uk" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VECTOR</title>
+  <title>VECTOR — служба РЕ та КБ</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -17,56 +17,141 @@
   <main class="page official-page">
     <button class="theme-toggle" id="themeToggle" type="button" aria-label="Перемкнути тему">
       <span class="theme-toggle__track"><span class="theme-toggle__dot"></span></span>
-      <span class="theme-toggle__text" id="themeLabel">Світла</span>
+      <span class="theme-toggle__text" id="themeLabel">Темна</span>
     </button>
 
-    <button class="entry-trigger" id="openLogin" type="button" aria-haspopup="dialog">
-      <span class="entry-trigger__line"></span>
-      <span class="entry-trigger__text">Вхід</span>
-      <span class="entry-trigger__line"></span>
-    </button>
+    <section class="landing" id="landingScreen">
+      <div class="landing__brand">
+        <img src="../assets/logo-dark.png" alt="VECTOR" />
+        <div>
+          <p class="eyebrow">аналітична система</p>
+          <h1>VECTOR</h1>
+          <p class="landing__subtitle">робочий простір служби радіоелектронної та кіберборотьби</p>
+        </div>
+      </div>
+      <button class="entry-trigger" id="openLogin" type="button" aria-haspopup="dialog">
+        <span class="entry-trigger__line"></span>
+        <span class="entry-trigger__text">Вхід</span>
+        <span class="entry-trigger__line"></span>
+      </button>
+    </section>
 
     <section class="auth-modal" id="authModal" aria-hidden="true">
       <div class="auth-panel" role="dialog" aria-modal="true" aria-labelledby="authTitle">
         <button class="modal-close" id="closeModal" type="button" aria-label="Закрити">×</button>
-
         <div class="auth-head">
           <button class="auth-tab is-active" type="button" data-auth-mode="login">Вхід</button>
           <button class="auth-tab" type="button" data-auth-mode="register">Подати заявку</button>
         </div>
-
         <form class="auth-form is-active" id="loginForm" autocomplete="on">
-          <h2 id="authTitle">Вхід</h2>
-          <label>
-            <span>Логін</span>
-            <input type="text" name="login" placeholder="Введіть логін" autocomplete="username" required />
-          </label>
-          <label>
-            <span>Пароль</span>
-            <input type="password" name="password" placeholder="Введіть пароль" autocomplete="current-password" required />
-          </label>
+          <h2 id="authTitle">VECTOR</h2>
+          <label><span>Логін</span><input type="text" name="login" placeholder="Введіть логін" autocomplete="username" required /></label>
+          <label><span>Пароль</span><input type="password" name="password" placeholder="Введіть пароль" autocomplete="current-password" required /></label>
           <button class="submit-btn" type="submit">Увійти</button>
-          <p class="auth-note">Немає доступу?</p>
-          <button class="inline-request" type="button" data-auth-mode="register">Подати заявку</button>
+          <p class="auth-note">Демо-режим: вхід відкриває робочий простір.</p>
         </form>
-
         <form class="auth-form" id="registerForm" autocomplete="on">
           <h2>Подати заявку</h2>
-          <label>
-            <span>Логін</span>
-            <input type="text" name="login" placeholder="Створіть логін" autocomplete="username" required />
-          </label>
-          <label>
-            <span>Email</span>
-            <input type="email" name="email" placeholder="name@example.com" autocomplete="email" required />
-          </label>
-          <label>
-            <span>Коментар</span>
-            <textarea name="comment" placeholder="Додатковий коментар"></textarea>
-          </label>
+          <label><span>Логін</span><input type="text" name="login" placeholder="Створіть логін" autocomplete="username" required /></label>
+          <label><span>Email</span><input type="email" name="email" placeholder="name@example.com" autocomplete="email" required /></label>
+          <label><span>Коментар</span><textarea name="comment" placeholder="Додатковий коментар"></textarea></label>
           <button class="submit-btn" type="submit">Надіслати заявку</button>
         </form>
       </div>
+    </section>
+
+    <section class="workspace" id="workspace" aria-hidden="true">
+      <aside class="sidebar">
+        <div class="brand-mini"><img src="../assets/logo-dark.png" alt=""><span>VECTOR</span></div>
+        <p class="sidebar__caption">служба РЕ та КБ</p>
+        <nav class="nav" aria-label="Основна навігація">
+          <button class="nav__item is-active" data-section="dashboard">Головна</button>
+          <button class="nav__item" data-section="refs">Довідники</button>
+          <button class="nav__item" data-section="current">Поточний стан</button>
+          <button class="nav__item" data-section="analysis">Аналіз</button>
+          <button class="nav__item" data-section="plan">План заходів</button>
+          <button class="nav__item" data-section="map">Карта</button>
+          <button class="nav__item" data-section="kpi">KPI</button>
+          <button class="nav__item" data-section="document">Документ</button>
+        </nav>
+      </aside>
+
+      <section class="content">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">План роботи на 2026 рік</p>
+            <h2 id="sectionTitle">Головна</h2>
+          </div>
+          <button class="ghost-btn" id="logoutBtn" type="button">Вийти</button>
+        </header>
+
+        <article class="section is-active" id="dashboard" data-title="Головна">
+          <div class="hero-card">
+            <p class="eyebrow">Єдина логіка</p>
+            <h3>Забезпечення + бойова робота аналізуються паралельно</h3>
+            <p>Система збирає довідники, формує поточний стан, аналізує проблеми, планує заходи та готує основу для документа.</p>
+          </div>
+          <div class="kpi-grid">
+            <div class="metric"><span>Довідники</span><strong id="filesCount">0</strong><small>завантажено локально</small></div>
+            <div class="metric"><span>Напрямки</span><strong>2</strong><small>забезпечення / бойова робота</small></div>
+            <div class="metric"><span>Документ</span><strong>2026</strong><small>план роботи служби</small></div>
+          </div>
+        </article>
+
+        <article class="section" id="refs" data-title="Довідники">
+          <div class="section-head">
+            <p class="eyebrow">Бібліотека даних</p>
+            <h3>Завантаження довідників</h3>
+            <p>Цей розділ є місцем збору файлів, з яких будуватиметься аналітика VECTOR.</p>
+          </div>
+          <div class="upload-grid" id="uploadGrid"></div>
+          <div class="table-card">
+            <div class="table-card__head"><h4>Реєстр завантажених файлів</h4><button class="ghost-btn" id="clearFiles" type="button">Очистити</button></div>
+            <div class="file-list" id="fileList">Файли ще не додані.</div>
+          </div>
+        </article>
+
+        <article class="section" id="current" data-title="Поточний стан">
+          <div class="two-column">
+            <div class="glass-card"><h3>Забезпечення</h3><p>ОВТ, штат/факт, справність, втрати, ремонти, ІКС, навчання.</p></div>
+            <div class="glass-card"><h3>Бойова робота</h3><p>ПУ, оповіщення, заявки, прикриття ВП/СП, штаби, маршрути, РЗ/РО, коридори.</p></div>
+          </div>
+        </article>
+
+        <article class="section" id="analysis" data-title="Аналіз">
+          <div class="matrix-card">
+            <h3>Матриця аналізу</h3>
+            <div class="matrix-row matrix-head"><span>Напрямок</span><span>Проблема</span><span>Наслідок</span><span>Рішення</span></div>
+            <div class="matrix-row"><span>Забезпечення</span><span>дефіцит / ремонт / ІКС</span><span>зниження готовності</span><span>закупівля, ремонт, навчання</span></div>
+            <div class="matrix-row"><span>Бойова робота</span><span>неприкриті об'єкти / час реакції</span><span>ризик ураження</span><span>оптимізація прикриття і коридорів</span></div>
+          </div>
+        </article>
+
+        <article class="section" id="plan" data-title="План заходів">
+          <div class="table-card"><h3>План заходів на 2026 рік</h3><p>Тут буде таблиця: захід → поточний стан → дія → строк → відповідальний → очікуваний ефект → KPI.</p></div>
+        </article>
+
+        <article class="section" id="map" data-title="Карта">
+          <div class="map-placeholder"><div><h3>Картографічний модуль</h3><p>Місце для шарів ВП/СП, штабів, логістичних маршрутів, РЗ/РО, станцій РЕБ/ПДТР та зон прикриття.</p></div></div>
+        </article>
+
+        <article class="section" id="kpi" data-title="KPI">
+          <div class="kpi-grid">
+            <div class="metric"><span>Забезпеченість</span><strong>—</strong><small>штат / факт</small></div>
+            <div class="metric"><span>Справність</span><strong>—</strong><small>готовність ОВТ</small></div>
+            <div class="metric"><span>Прикриття</span><strong>—</strong><small>об'єкти / заявки</small></div>
+          </div>
+        </article>
+
+        <article class="section" id="document" data-title="Документ">
+          <div class="hero-card">
+            <p class="eyebrow">Фінальна мета</p>
+            <h3>План роботи служби РЕ та КБ на 2026 рік</h3>
+            <p>Розділ для формування структури документа, експорту таблиць, графіків, карт та інфографіки.</p>
+            <button class="submit-btn" type="button">Сформувати чернетку</button>
+          </div>
+        </article>
+      </section>
     </section>
   </main>
   <script src="./app.js"></script>
