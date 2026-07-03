@@ -42,15 +42,12 @@ function closeAuth() {
 
 function showAuthMessage(message, type = 'error') {
   if (!loginForm) return;
-
   let messageBox = loginForm.querySelector('.auth-message');
-
   if (!messageBox) {
     messageBox = document.createElement('p');
     messageBox.className = 'auth-message';
     loginForm.appendChild(messageBox);
   }
-
   messageBox.textContent = message;
   messageBox.dataset.type = type;
 }
@@ -63,9 +60,8 @@ openLogin?.addEventListener('click', openAuth);
 closeModal?.addEventListener('click', closeAuth);
 
 fillDemoAdmin?.addEventListener('click', () => {
-  if (!loginForm) return;
-  const loginInput = loginForm.querySelector('input[name="login"]');
-  const passwordInput = loginForm.querySelector('input[name="password"]');
+  const loginInput = loginForm?.querySelector('input[name="login"]');
+  const passwordInput = loginForm?.querySelector('input[name="password"]');
   if (loginInput) loginInput.value = DEFAULT_ADMIN.login;
   if (passwordInput) passwordInput.value = DEFAULT_ADMIN.password;
   showAuthMessage('Демо-доступ заповнено.', 'success');
@@ -81,7 +77,6 @@ document.addEventListener('keydown', (event) => {
 
 loginForm?.addEventListener('submit', (event) => {
   event.preventDefault();
-
   const formData = new FormData(loginForm);
   const login = normalizeLogin(formData.get('login'));
   const password = String(formData.get('password') || '');
@@ -96,6 +91,6 @@ loginForm?.addEventListener('submit', (event) => {
   showAuthMessage('Доступ підтверджено. Відкриваю адмін-панель...', 'success');
 
   setTimeout(() => {
-    window.location.href = './grant-access.html';
+    window.location.href = './access.html';
   }, 350);
 });
