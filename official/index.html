@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="./styles.css" />
   <link rel="stylesheet" href="./landing-fix.css?v=20260703-5" />
   <link rel="stylesheet" href="./workspace-nav.css?v=20260703-3" />
+  <link rel="stylesheet" href="./map-fix.css?v=20260703-1" />
   <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png" />
   <meta name="theme-color" content="#111418" />
 </head>
@@ -40,8 +41,7 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="./app.js?v=20260703-2"></script>
   <script>
-    let vectorMap, activeLayer;
-    const layers = {osm:['https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png','© OpenStreetMap contributors'],roads:['https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png','© OpenStreetMap contributors, HOT'],sat:['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}','Tiles © Esri'],topo:['https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png','© OpenTopoMap contributors'],dark:['https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png','© OpenStreetMap © CARTO'],nato:['https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png','© OpenStreetMap contributors']};
+    let vectorMap, activeLayer; const layers={osm:['https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png','© OpenStreetMap contributors'],roads:['https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png','© OpenStreetMap contributors, HOT'],sat:['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}','Tiles © Esri'],topo:['https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png','© OpenTopoMap contributors'],dark:['https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png','© OpenStreetMap © CARTO'],nato:['https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png','© OpenStreetMap contributors']};
     function initVectorMap(){if(vectorMap||!window.L)return;vectorMap=L.map('vectorMap',{zoomControl:false}).setView([48.86,37.60],9);L.control.zoom({position:'bottomright'}).addTo(vectorMap);setMapLayer('osm');}
     function setMapLayer(key){if(!vectorMap)return;if(activeLayer)vectorMap.removeLayer(activeLayer);const cfg=layers[key]||layers.osm;activeLayer=L.tileLayer(cfg[0],{maxZoom:19,attribution:cfg[1]}).addTo(vectorMap);document.querySelectorAll('.layer-btn').forEach(b=>b.classList.toggle('is-active',b.dataset.layer===key));}
     function enterVector(){document.getElementById('authModal')?.classList.remove('is-open');document.getElementById('landingScreen')?.setAttribute('hidden','true');document.querySelector('.landing-bg')?.setAttribute('hidden','true');const w=document.getElementById('workspace');if(w){w.classList.add('is-open');w.setAttribute('aria-hidden','false');}setTimeout(()=>{initVectorMap();vectorMap&&vectorMap.invalidateSize();},150);}
