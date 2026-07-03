@@ -1,137 +1,14 @@
 <!doctype html>
-<html lang="uk" data-theme="light">
+<html lang="uk">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VECTOR - Надати доступ</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./styles.css" />
-  <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png" />
-  <link rel="icon" type="image/png" sizes="192x192" href="../assets/favicon-192.png" />
-  <link rel="apple-touch-icon" href="../assets/favicon-192.png" />
-  <meta name="theme-color" content="#111418" />
+  <title>VECTOR - Доступ</title>
+  <meta http-equiv="refresh" content="0; url=./access.html" />
+  <script>window.location.replace('./access.html');</script>
 </head>
 <body>
-  <main class="admin-layout">
-    <aside class="admin-sidebar" aria-label="Навігація адмін-панелі">
-      <a class="admin-sidebar__logo" href="./grant-access.html" aria-label="VECTOR admin dashboard">
-        <img class="admin-sidebar__logo-img admin-sidebar__logo-img--light" src="../assets/logo-dark.png" alt="VECTOR">
-        <img class="admin-sidebar__logo-img admin-sidebar__logo-img--dark" src="../assets/logo-light.png" alt="VECTOR">
-      </a>
-
-      <nav class="admin-nav">
-        <a class="admin-nav__item is-active" href="./grant-access.html" data-page="grant-access">
-          <span class="admin-nav__icon"><img src="../assets/admin-icons/grant-access.svg" alt=""></span>
-          <span>Надати доступ</span>
-        </a>
-        <a class="admin-nav__item" href="./users.html" data-page="users">
-          <span class="admin-nav__icon"><img src="../assets/admin-icons/users.svg" alt=""></span>
-          <span>Користувачі</span>
-        </a>
-        <a class="admin-nav__item" href="./admin-access.html" data-page="admin-access">
-          <span class="admin-nav__icon"><img src="../assets/admin-icons/admin-access.svg" alt=""></span>
-          <span>Адмін-доступ</span>
-        </a>
-        <a class="admin-nav__item" href="./requests.html" data-page="requests">
-          <span class="admin-nav__icon"><img src="../assets/admin-icons/requests.svg" alt=""></span>
-          <span>Заявки</span>
-        </a>
-        <a class="admin-nav__item" href="./logs.html" data-page="logs">
-          <span class="admin-nav__icon"><img src="../assets/admin-icons/logs.svg" alt=""></span>
-          <span>Логування</span>
-        </a>
-        <a class="admin-nav__item" href="./settings.html" data-page="settings">
-          <span class="admin-nav__icon"><img src="../assets/admin-icons/settings.svg" alt=""></span>
-          <span>Налаштування</span>
-        </a>
-      </nav>
-
-      <button class="admin-nav__logout" id="logoutBtn" type="button">
-        <span class="admin-nav__icon"><img src="../assets/admin-icons/logout.svg" alt=""></span>
-        <span>Вийти</span>
-      </button>
-    </aside>
-
-    <section class="admin-workspace" aria-label="Робоча область адмін-панелі">
-      <button class="theme-toggle admin-theme-toggle" id="themeToggle" type="button" aria-label="Перемкнути тему">
-        <span class="theme-toggle__track"><span class="theme-toggle__dot"></span></span>
-        <span class="theme-toggle__text" id="themeLabel">Світла</span>
-      </button>
-
-      <button class="official-copy-btn" id="copyOfficialLink" type="button" aria-label="Скопіювати посилання на офіційний сайт">
-        <img class="official-copy-btn__logo official-copy-btn__logo--light" src="../assets/logo-dark.png" alt="">
-        <img class="official-copy-btn__logo official-copy-btn__logo--dark" src="../assets/logo-light.png" alt="">
-      </button>
-      <p class="copy-toast" id="copyToast" aria-live="polite">Посилання скопійовано</p>
-
-      <section class="admin-page-content page-grant-access">
-        <header class="admin-page-head">
-          <h1>Надати доступ</h1>
-        </header>
-
-        <form class="grant-card" id="grantAccessForm">
-          <div class="grant-card__intro">
-            <div class="grant-card__intro-icon">
-              <img src="../assets/admin-icons/grant-access.svg" alt="">
-            </div>
-            <p>Заповніть email, роль і створіть персональне setup-посилання для першого входу.</p>
-          </div>
-
-          <div class="grant-form-grid">
-            <label class="field-block">
-              <span class="field-label">Email користувача <b>ⓘ</b></span>
-              <span class="field-control">
-                <span class="field-icon">@</span>
-                <input type="email" name="email" placeholder="operator@example.com" required>
-              </span>
-            </label>
-
-            <label class="field-block">
-              <span class="field-label">Роль користувача <b>ⓘ</b></span>
-              <span class="field-control role-select" data-role-select>
-                <span class="field-icon"><img src="../assets/admin-icons/admin-access.svg" alt=""></span>
-                <input type="hidden" name="role" value="demo" data-role-value>
-                <button class="role-select__button" type="button" aria-haspopup="listbox" aria-expanded="false" data-role-button>
-                  <span class="role-select__current" data-role-label>Демо — тільки перегляд</span>
-                  <span class="role-select__chevron">⌄</span>
-                </button>
-                <span class="role-select__menu" role="listbox" data-role-menu>
-                  <button class="role-select__option is-selected" type="button" role="option" data-value="demo">
-                    <span class="role-select__option-title">Демо</span>
-                    <span class="role-select__option-desc">тільки перегляд</span>
-                  </button>
-                  <button class="role-select__option" type="button" role="option" data-value="operator">
-                    <span class="role-select__option-title">Оператор</span>
-                    <span class="role-select__option-desc">робота без редагування довідників</span>
-                  </button>
-                  <button class="role-select__option" type="button" role="option" data-value="supervisor">
-                    <span class="role-select__option-title">Супервайзер</span>
-                    <span class="role-select__option-desc">повний доступ</span>
-                  </button>
-                </span>
-              </span>
-            </label>
-
-            <label class="field-block field-block--wide">
-              <span class="field-label">Нотатка <em>(необов'язково)</em> <b>ⓘ</b></span>
-              <span class="field-control field-control--textarea">
-                <span class="field-icon"><img src="../assets/admin-icons/requests.svg" alt=""></span>
-                <textarea name="note" maxlength="255" placeholder="За потреби: підрозділ, причина доступу, примітка..."></textarea>
-                <span class="field-counter">0 / 255</span>
-              </span>
-            </label>
-          </div>
-
-          <button class="grant-submit" type="submit">
-            <img src="../assets/admin-icons/telegram.svg" alt="">
-            <span>Надіслати запрошення</span>
-          </button>
-        </form>
-      </section>
-    </section>
-  </main>
-  <script src="./admin-common.js"></script>
+  <p>Перехід на сторінку доступу...</p>
+  <p><a href="./access.html">Відкрити сторінку доступу</a></p>
 </body>
 </html>
