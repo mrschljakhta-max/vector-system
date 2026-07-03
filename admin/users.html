@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="uk" data-theme="light">
+<html lang="uk" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,189 +9,55 @@
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./styles.css" />
   <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png" />
-  <link rel="icon" type="image/png" sizes="192x192" href="../assets/favicon-192.png" />
-  <link rel="apple-touch-icon" href="../assets/favicon-192.png" />
   <meta name="theme-color" content="#111418" />
 </head>
 <body>
-  <main class="admin-layout">
-    <aside class="admin-sidebar" aria-label="Навігація адмін-панелі">
-      <a class="admin-sidebar__logo" href="./grant-access.html" aria-label="VECTOR admin dashboard">
-        <img class="admin-sidebar__logo-img admin-sidebar__logo-img--light" src="../assets/logo-dark.png" alt="VECTOR">
-        <img class="admin-sidebar__logo-img admin-sidebar__logo-img--dark" src="../assets/logo-light.png" alt="VECTOR">
-      </a>
-
-      <nav class="admin-nav">
-        <a class="admin-nav__item" href="./grant-access.html" data-page="grant-access">
-          <span class="admin-nav__icon"><img src="../assets/admin-icons/grant-access.svg" alt=""></span>
-          <span>Надати доступ</span>
-        </a>
-        <a class="admin-nav__item is-active" href="./users.html" data-page="users">
-          <span class="admin-nav__icon"><img src="../assets/admin-icons/users.svg" alt=""></span>
-          <span>Користувачі</span>
-        </a>
-        <a class="admin-nav__item" href="./admin-access.html" data-page="admin-access">
-          <span class="admin-nav__icon"><img src="../assets/admin-icons/admin-access.svg" alt=""></span>
-          <span>Адмін-доступ</span>
-        </a>
-        <a class="admin-nav__item" href="./requests.html" data-page="requests">
-          <span class="admin-nav__icon"><img src="../assets/admin-icons/requests.svg" alt=""></span>
-          <span>Заявки</span>
-        </a>
-        <a class="admin-nav__item" href="./logs.html" data-page="logs">
-          <span class="admin-nav__icon"><img src="../assets/admin-icons/logs.svg" alt=""></span>
-          <span>Логування</span>
-        </a>
-        <a class="admin-nav__item" href="./settings.html" data-page="settings">
-          <span class="admin-nav__icon"><img src="../assets/admin-icons/settings.svg" alt=""></span>
-          <span>Налаштування</span>
-        </a>
+  <main class="admin-shell">
+    <aside class="simple-sidebar">
+      <a class="simple-logo" href="./access.html">VECTOR</a>
+      <nav class="simple-nav">
+        <a href="./access.html">Доступ</a>
+        <a class="is-active" href="./users.html">Користувачі</a>
       </nav>
-
-      <button class="admin-nav__logout" id="logoutBtn" type="button">
-        <span class="admin-nav__icon"><img src="../assets/admin-icons/logout.svg" alt=""></span>
-        <span>Вийти</span>
-      </button>
+      <button class="admin-nav__logout" id="logoutBtn" type="button">Вийти</button>
     </aside>
 
-    <section class="admin-workspace" aria-label="Робоча область адмін-панелі">
+    <section class="simple-workspace">
       <button class="theme-toggle admin-theme-toggle" id="themeToggle" type="button" aria-label="Перемкнути тему">
         <span class="theme-toggle__track"><span class="theme-toggle__dot"></span></span>
-        <span class="theme-toggle__text" id="themeLabel">Світла</span>
+        <span class="theme-toggle__text" id="themeLabel">Темна</span>
       </button>
 
-      <section class="admin-page-content page-users">
-        <header class="admin-page-head users-head">
-          <h1>Користувачі</h1>
-          <div class="admin-user-pill">lavash · admin</div>
-        </header>
+      <header class="simple-head">
+        <div>
+          <p class="simple-kicker">локальна база доступу</p>
+          <h1>Зареєстровані користувачі</h1>
+        </div>
+        <a class="simple-link" href="./access.html">Створити користувача</a>
+      </header>
 
-        <section class="users-card" aria-label="Керування користувачами">
-          <div class="users-card__top">
-            <p>Перегляд, керування та контроль доступу користувачів системи.</p>
-            <button class="users-refresh" id="usersRefresh" type="button" aria-label="Оновити список">
-              <span class="users-btn-icon">↻</span>
-              Оновити
-            </button>
-          </div>
+      <section class="simple-card">
+        <div class="simple-toolbar">
+          <input id="usersSearch" type="search" placeholder="Пошук за email, маркером або роллю">
+          <button class="ghost-action danger" id="clearUsers" type="button">Очистити</button>
+        </div>
 
-          <div class="users-stats" aria-label="Статистика користувачів">
-            <article class="users-stat">
-              <span class="users-stat__icon">☷</span>
-              <div>
-                <span class="users-stat__label">Всього користувачів</span>
-                <strong>5</strong>
-              </div>
-            </article>
-            <article class="users-stat">
-              <span class="users-stat__icon">✓</span>
-              <div>
-                <span class="users-stat__label">Активних</span>
-                <strong>4</strong>
-              </div>
-            </article>
-            <article class="users-stat">
-              <span class="users-stat__icon">＋</span>
-              <div>
-                <span class="users-stat__label">На етапі реєстрації</span>
-                <strong>1</strong>
-              </div>
-            </article>
-          </div>
-
-          <div class="users-toolbar">
-            <label class="users-search">
-              <span class="users-toolbar__label">Пошук</span>
-              <span class="users-control users-control--search">
-                <span class="users-control__icon">⌕</span>
-                <input id="usersSearch" type="search" placeholder="Логін, email або роль..." autocomplete="off">
-              </span>
-            </label>
-
-            <label class="users-filter">
-              <span class="users-toolbar__label">Статус</span>
-              <span class="users-control users-control--select">
-                <span class="users-control__icon">♙</span>
-                <select id="usersStatusFilter">
-                  <option value="all">Усі користувачі</option>
-                  <option value="active">Активні</option>
-                  <option value="pending">На етапі реєстрації</option>
-                  <option value="blocked">Заблоковані</option>
-                </select>
-              </span>
-            </label>
-          </div>
-
-          <div class="users-table-wrap">
-            <table class="users-table">
-              <thead>
-                <tr>
-                  <th>Login</th>
-                  <th>Email</th>
-                  <th>Роль</th>
-                  <th>Статус</th>
-                  <th>2FA</th>
-                  <th>Доступ</th>
-                  <th>Створено</th>
-                  <th>Дії</th>
-                </tr>
-              </thead>
-              <tbody id="usersTableBody">
-                <tr data-user-row data-status="active" data-search="awjjsk67@gmail.com awjjsk67@gmail.com demo active">
-                  <td><strong>awjjsk67@gmail.com</strong></td>
-                  <td>awjjsk67@gmail.com</td>
-                  <td><span class="role-badge">Demo</span></td>
-                  <td><span class="status-dot status-dot--ok">✓</span></td>
-                  <td><span class="status-dot status-dot--ok">✓</span></td>
-                  <td><span class="status-dot status-dot--ok">✓</span></td>
-                  <td><strong>08.06.2026</strong><small>09:23</small></td>
-                  <td><div class="users-actions"><button type="button" title="Профіль">⌗</button><button type="button" title="Перевірка">≡</button><button class="danger" type="button" title="Заблокувати">♙</button></div></td>
-                </tr>
-                <tr data-user-row data-status="pending" data-search="mr.schljakhta@gmail.com demo pending registration">
-                  <td><strong>—</strong></td>
-                  <td>mr.schljakhta@gmail.com</td>
-                  <td><span class="role-badge">Demo</span></td>
-                  <td><span class="status-dot status-dot--bad">×</span></td>
-                  <td><span class="status-dot status-dot--bad">×</span></td>
-                  <td><span class="status-dot status-dot--bad">×</span></td>
-                  <td><strong>06.06.2026</strong><small>09:33</small></td>
-                  <td><div class="users-actions"><button type="button" title="Профіль">⌗</button><button type="button" title="Перевірка">≡</button><button class="danger" type="button" title="Заблокувати">♙</button></div></td>
-                </tr>
-                <tr data-user-row data-status="active" data-search="vladt tkachenko.vladimir.kh@gmail.com demo active">
-                  <td><strong>vladt</strong></td>
-                  <td>tkachenko.vladimir.kh@gmail.com</td>
-                  <td><span class="role-badge">Demo</span></td>
-                  <td><span class="status-dot status-dot--ok">✓</span></td>
-                  <td><span class="status-dot status-dot--ok">✓</span></td>
-                  <td><span class="status-dot status-dot--ok">✓</span></td>
-                  <td><strong>24.05.2026</strong><small>11:09</small></td>
-                  <td><div class="users-actions"><button type="button" title="Профіль">⌗</button><button type="button" title="Перевірка">≡</button><button class="danger" type="button" title="Заблокувати">♙</button></div></td>
-                </tr>
-                <tr data-user-row data-status="active" data-search="operator operator@vector.local user active">
-                  <td><strong>operator</strong></td>
-                  <td>operator@vector.local</td>
-                  <td><span class="role-badge">User</span></td>
-                  <td><span class="status-dot status-dot--ok">✓</span></td>
-                  <td><span class="status-dot status-dot--ok">✓</span></td>
-                  <td><span class="status-dot status-dot--ok">✓</span></td>
-                  <td><strong>21.05.2026</strong><small>18:40</small></td>
-                  <td><div class="users-actions"><button type="button" title="Профіль">⌗</button><button type="button" title="Перевірка">≡</button><button class="danger" type="button" title="Заблокувати">♙</button></div></td>
-                </tr>
-                <tr data-user-row data-status="blocked" data-search="test test@vector.local demo blocked">
-                  <td><strong>test</strong></td>
-                  <td>test@vector.local</td>
-                  <td><span class="role-badge">Demo</span></td>
-                  <td><span class="status-dot status-dot--bad">×</span></td>
-                  <td><span class="status-dot status-dot--ok">✓</span></td>
-                  <td><span class="status-dot status-dot--bad">×</span></td>
-                  <td><strong>19.05.2026</strong><small>12:15</small></td>
-                  <td><div class="users-actions"><button type="button" title="Профіль">⌗</button><button type="button" title="Перевірка">≡</button><button class="danger" type="button" title="Розблокувати">♙</button></div></td>
-                </tr>
-              </tbody>
-            </table>
-            <p class="users-empty" id="usersEmpty" hidden>Користувачів за цим фільтром не знайдено.</p>
-          </div>
-        </section>
+        <div class="local-users-wrap">
+          <table class="local-users-table">
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>Ключ входу</th>
+                <th>Маркер</th>
+                <th>Роль</th>
+                <th>Статус</th>
+                <th>Дії</th>
+              </tr>
+            </thead>
+            <tbody id="localUsersBody"></tbody>
+          </table>
+          <p class="users-empty" id="usersEmpty">Користувачів ще не створено.</p>
+        </div>
       </section>
     </section>
   </main>
