@@ -5,6 +5,7 @@ const authModal = document.querySelector('#authModal');
 const openLogin = document.querySelector('#openLogin');
 const closeModal = document.querySelector('#closeModal');
 const loginForm = document.querySelector('#loginForm');
+const fillDemoAdmin = document.querySelector('#fillDemoAdmin');
 
 const DEFAULT_ADMIN = {
   login: 'admin',
@@ -60,6 +61,15 @@ function normalizeLogin(value) {
 
 openLogin?.addEventListener('click', openAuth);
 closeModal?.addEventListener('click', closeAuth);
+
+fillDemoAdmin?.addEventListener('click', () => {
+  if (!loginForm) return;
+  const loginInput = loginForm.querySelector('input[name="login"]');
+  const passwordInput = loginForm.querySelector('input[name="password"]');
+  if (loginInput) loginInput.value = DEFAULT_ADMIN.login;
+  if (passwordInput) passwordInput.value = DEFAULT_ADMIN.password;
+  showAuthMessage('Демо-доступ заповнено.', 'success');
+});
 
 authModal?.addEventListener('click', (event) => {
   if (event.target === authModal) closeAuth();
