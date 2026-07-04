@@ -14,14 +14,20 @@
       key:'summary', category:'objects', title:'Зведені НП',
       desc:'1 точка = 1 населений пункт із пов’язаними записами',
       table:'map_settlement_summary', point:true, aggregate:true,
-      name:'settlement_name', lat:'lat', lon:'lon',
+      name:'settlement_name', lat:'lat', lon:'lon', countField:'total_related_count', popup:'summary',
       columns:['settlement_id','settlement_name','region','district','hromada_name','lat','lon','mgrs','stations_count','cover_objects_count','vp_count','sp_count','uav_events_count','detected_count','suppressed_count','cover_events_count','requests_count','corridor_count','protection_count','station_units_count','cover_units_count','first_event_at','last_event_at','first_request_at','last_request_at','total_related_count']
     },
-    { key:'uav', category:'objects', title:'БпЛА', desc:'Події БпЛА з NORM бойової роботи', table:'norm_word_events', columns:['event_at','uav_type_id','result_raw','result_normalized','azimuth','is_detected','is_suppressed','is_cover','created_at'], point:false },
+    {
+      key:'uav', category:'objects', title:'БпЛА',
+      desc:'Події БпЛА, згруповані по населених пунктах',
+      table:'map_uav_settlement_summary', point:true, aggregate:true,
+      name:'settlement_name', lat:'lat', lon:'lon', countField:'uav_events_count', popup:'uav',
+      columns:['settlement_id','settlement_name','region','district','hromada_name','lat','lon','mgrs','uav_events_count','detected_count','suppressed_count','cover_count','first_event_at','last_event_at','stations_count','uav_types_count']
+    },
     { key:'settlements', category:'objects', title:'Населені пункти', desc:'dict_settlements: lat/lon/MGRS', table:'dict_settlements', columns:['name','region','district','hromada_name','lat','lon','mgrs'], point:true, name:'name', lat:'lat', lon:'lon' },
     { key:'stations', category:'objects', title:'Станції', desc:'dict_stations: станції та координати', table:'dict_stations', columns:['station_name','station_code','status_text','lat','lon','mgrs'], point:true, name:'station_name', lat:'lat', lon:'lon' },
-    { key:'vp', category:'objects', title:'ВП', desc:'Об’єкти прикриття типу ВП', table:'dict_cover_objects', columns:['object_name','object_type','type_code','priority','lat','lon','mgrs'], point:true, name:'object_name', lat:'lat', lon:'lon', filter:(r)=>String(r.object_type||r.type_code||'').toLowerCase().includes('вп') },
-    { key:'sp', category:'objects', title:'СП', desc:'Об’єкти прикриття типу СП', table:'dict_cover_objects', columns:['object_name','object_type','type_code','priority','lat','lon','mgrs'], point:true, name:'object_name', lat:'lat', lon:'lon', filter:(r)=>String(r.object_type||r.type_code||'').toLowerCase().includes('сп') },
+    { key:'vp', category:'objects', title:'ВП', desc:'Об’єкти прикриття типу ВП', table:'dict_cover_objects', columns:['object_name','object_type','type_code','priority','lat','lon','mgrs'], point:true, name:'object_name', lat:'lat', lon:'lon', filter:(r)=>String(r.object_type||r.type_code||'').toLowerCase().includes('вп') || String(r.type_code||'').toUpperCase()==='VP' },
+    { key:'sp', category:'objects', title:'СП', desc:'Об’єкти прикриття типу СП', table:'dict_cover_objects', columns:['object_name','object_type','type_code','priority','lat','lon','mgrs'], point:true, name:'object_name', lat:'lat', lon:'lon', filter:(r)=>String(r.object_type||r.type_code||'').toLowerCase().includes('сп') || String(r.type_code||'').toUpperCase()==='SP' },
     { key:'units', category:'objects', title:'Підрозділи', desc:'dict_units: структура підрозділів', table:'dict_units', columns:['unit_name','short_name','unit_type','level_no','note'], point:false },
     { key:'frequencies', category:'params', title:'Частоти', desc:'Показувати частотні поля в підписах', table:'dict_civil_freq', columns:['name','category','freq_from_mhz','freq_to_mhz','note'], point:false },
     { key:'date', category:'params', title:'Дата', desc:'Дата події / заявки для фільтрів і таймлапсу', table:'norm_excel_requests', columns:['request_date'], point:false },
@@ -41,7 +47,7 @@
   function ensureDialog(){
     if(document.querySelector('#mapDataDialog')) return;
     const dialog=document.createElement('section'); dialog.id='mapDataDialog'; dialog.className='map-data-dialog'; dialog.setAttribute('aria-hidden','true');
-    dialog.innerHTML='<div class="map-data-panel"><div class="map-data-head"><div><h2>Дані карти</h2><p>Обери джерела даних для карти. Рекомендовано: “Зведені НП” — чистий шар без дублювання точок.</p></div><button class="map-data-close" type="button" onclick="closeMapDataDialog()">×</button></div><div class="map-data-sections"><section class="map-data-section"><h3>Об’єкти</h3><div class="map-data-grid" id="mapObjectGrid"></div></section><section class="map-data-section"><h3>Параметри</h3><div class="map-data-grid" id="mapParamGrid"></div></section></div><div class="map-data-actions"><button class="map-data-btn" type="button" id="mapDataRefresh">Оновити</button><button class="map-data-btn map-data-btn--primary" type="button" id="mapDataApply">Застосувати</button></div><div class="map-data-status" id="mapDataStatus">Готово до вибору даних.</div></div>';
+    dialog.innerHTML='<div class="map-data-panel"><div class="map-data-head"><div><h2>Дані карти</h2><p>Обери джерела даних для карти. БпЛА тепер беруть координати через прив’язку до населених пунктів.</p></div><button class="map-data-close" type="button" onclick="closeMapDataDialog()">×</button></div><div class="map-data-sections"><section class="map-data-section"><h3>Об’єкти</h3><div class="map-data-grid" id="mapObjectGrid"></div></section><section class="map-data-section"><h3>Параметри</h3><div class="map-data-grid" id="mapParamGrid"></div></section></div><div class="map-data-actions"><button class="map-data-btn" type="button" id="mapDataRefresh">Оновити</button><button class="map-data-btn map-data-btn--primary" type="button" id="mapDataApply">Застосувати</button></div><div class="map-data-status" id="mapDataStatus">Готово до вибору даних.</div></div>';
     document.body.appendChild(dialog);
     const badges=document.createElement('div'); badges.id='mapLayerBadge'; badges.className='map-layer-badge'; document.body.appendChild(badges);
     dialog.addEventListener('click',e=>{ if(e.target===dialog) closeMapDataDialog(); });
@@ -56,8 +62,8 @@
     paramGrid.innerHTML=DATASETS.filter(d=>d.category==='params').map(cardHtml).join('');
     document.querySelectorAll('.map-data-card input').forEach(input=>input.addEventListener('change',e=>{
       e.target.checked ? selected.add(e.target.value) : selected.delete(e.target.value);
-      if(e.target.value === 'summary' && e.target.checked){ ['settlements','stations','vp','sp'].forEach(k=>selected.delete(k)); }
-      if(['settlements','stations','vp','sp'].includes(e.target.value) && e.target.checked){ selected.delete('summary'); }
+      if(e.target.value === 'summary' && e.target.checked){ ['uav','settlements','stations','vp','sp'].forEach(k=>selected.delete(k)); }
+      if(['uav','settlements','stations','vp','sp'].includes(e.target.value) && e.target.checked){ selected.delete('summary'); }
       renderCards();
     }));
   }
@@ -77,27 +83,26 @@
     const chosen=DATASETS.filter(d=>selected.has(d.key)); let added=0;
     status('Завантажую вибрані джерела...');
     for(const d of chosen.filter(x=>x.point)){
-      const {data,error}=await c.from(d.table).select(d.columns.join(',')).limit(1200);
+      const {data,error}=await c.from(d.table).select(d.columns.join(',')).limit(2000);
       if(error){ console.warn(error); status('Помилка джерела '+d.title+': '+error.message); continue; }
       (data||[]).filter(r=>!d.filter||d.filter(r)).forEach(r=>{
         const lat=Number(r[d.lat]), lon=Number(r[d.lon]); if(!Number.isFinite(lat)||!Number.isFinite(lon)) return;
         const title=r[d.name]||d.title;
-        const marker = d.aggregate ? makeSummaryMarker(lat, lon, r) : window.L.circleMarker([lat,lon],{radius:6,weight:2,fillOpacity:.75});
-        marker.bindPopup(d.aggregate ? summaryPopup(r) : basicPopup(title, d.title, r)).addTo(layerGroup); added++;
+        const marker = d.aggregate ? makeScaledMarker(lat, lon, r, d.countField) : window.L.circleMarker([lat,lon],{radius:6,weight:2,fillOpacity:.75});
+        marker.bindPopup(d.popup === 'summary' ? summaryPopup(r) : d.popup === 'uav' ? uavPopup(r) : basicPopup(title, d.title, r)).addTo(layerGroup); added++;
       });
     }
     renderBadges(chosen); status('Дані застосовано. Точок на карті: '+added+'. Параметри: '+chosen.filter(x=>!x.point).map(x=>x.title).join(', '));
     closeMapDataDialog(); if(added) try{ map.fitBounds(layerGroup.getBounds(),{padding:[40,40]}); }catch{}
   }
 
-  function makeSummaryMarker(lat, lon, r){
-    const total = Number(r.total_related_count || 0);
-    const radius = Math.max(7, Math.min(26, 7 + Math.sqrt(total) * 0.55));
+  function makeScaledMarker(lat, lon, r, field){
+    const total = Number(r[field] || r.total_related_count || 0);
+    const radius = Math.max(7, Math.min(28, 7 + Math.sqrt(total) * 0.45));
     return window.L.circleMarker([lat, lon], { radius, weight:2, fillOpacity:.72 });
   }
   function summaryPopup(r){
-    return '<b>'+esc(r.settlement_name)+'</b><br>'+
-      '<span>Зведений НП</span><hr>'+
+    return '<b>'+esc(r.settlement_name)+'</b><br><span>Зведений НП</span><hr>'+
       'Всього пов’язаних: <b>'+esc(r.total_related_count)+'</b><br>'+
       'Станції: <b>'+esc(r.stations_count)+'</b><br>'+
       'ВП: <b>'+esc(r.vp_count)+'</b> / СП: <b>'+esc(r.sp_count)+'</b><br>'+
@@ -107,6 +112,17 @@
       'Коридори: <b>'+esc(r.corridor_count)+'</b> / Прикриття: <b>'+esc(r.protection_count)+'</b><br>'+
       'Остання подія: '+esc(formatDate(r.last_event_at))+'<br>'+
       'Остання заявка: '+esc(formatDate(r.last_request_at));
+  }
+  function uavPopup(r){
+    return '<b>'+esc(r.settlement_name)+'</b><br><span>БпЛА / бойова робота</span><hr>'+
+      'Подій: <b>'+esc(r.uav_events_count)+'</b><br>'+
+      'Виявлено: <b>'+esc(r.detected_count)+'</b><br>'+
+      'Подавлено: <b>'+esc(r.suppressed_count)+'</b><br>'+
+      'Прикриття: <b>'+esc(r.cover_count)+'</b><br>'+
+      'Станцій у подіях: <b>'+esc(r.stations_count)+'</b><br>'+
+      'Типів БпЛА: <b>'+esc(r.uav_types_count)+'</b><br>'+
+      'Перша подія: '+esc(formatDate(r.first_event_at))+'<br>'+
+      'Остання подія: '+esc(formatDate(r.last_event_at));
   }
   function basicPopup(title, sourceTitle, r){ return '<b>'+esc(title)+'</b><br>'+sourceTitle+'<br>'+Object.entries(r).slice(0,8).map(([k,v])=>esc(k)+': '+esc(v??'')).join('<br>'); }
   function formatDate(v){ if(!v) return '—'; try{return new Date(v).toLocaleString('uk-UA');}catch{return v;} }
