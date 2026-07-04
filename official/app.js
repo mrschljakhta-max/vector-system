@@ -47,6 +47,8 @@ function loadLibraryAssets() {
   injectAsset('script', { src: './map-data.js?v=20260704-7', defer: true });
   injectAsset('link', { rel: 'stylesheet', href: './dict-editor.css?v=20260704-1' });
   injectAsset('script', { src: './dict-editor.js?v=20260704-1', defer: true });
+  injectAsset('script', { src: './route-point-editor.js?v=20260704-1', defer: true });
+  injectAsset('script', { src: './map-network.js?v=20260704-1', defer: true });
 }
 loadLibraryAssets();
 forceNavVisibility();
@@ -65,7 +67,7 @@ function ensureMapDataButton() {
 function applyTheme(theme) { root.dataset.theme = theme; localStorage.setItem('vector-theme', theme); if (themeLabel) themeLabel.textContent = theme === 'dark' ? 'Темна' : 'Світла'; }
 applyTheme(localStorage.getItem('vector-theme') || 'dark');
 themeToggle?.addEventListener('click', () => applyTheme(root.dataset.theme === 'dark' ? 'light' : 'dark'));
-function setAuthMode(mode) { document.querySelectorAll('.auth-tab[data-auth-mode]').forEach((tab) => tab.classList.toggle('is-active', tab.dataset.authMode === mode)); loginForm?.classList.toggle('is-active', mode === 'login'); registerForm?.classList.toggle('is-active', mode === 'register'); }
+function setAuthMode(mode) { document.querySelectorAll('.auth-tab[data-auth-mode]').forEach((tab) => tab.classList.toggle('is-active', tab.datasetAuthMode === mode || tab.dataset.authMode === mode)); loginForm?.classList.toggle('is-active', mode === 'login'); registerForm?.classList.toggle('is-active', mode === 'register'); }
 function openAuth(mode = 'login') { setAuthMode(mode); authModal?.classList.add('is-open'); authModal?.setAttribute('aria-hidden', 'false'); }
 function closeAuth() { authModal?.classList.remove('is-open'); authModal?.setAttribute('aria-hidden', 'true'); }
 openLogin?.addEventListener('click', () => openAuth('login'));
