@@ -20,21 +20,17 @@
 
   const DATASETS = [
     {
-      key:'summary', category:'objects', title:'Зведені НП',
-      desc:'1 точка = 1 населений пункт із пов’язаними записами',
-      table:'map_settlement_summary', point:true, aggregate:true,
-      name:'settlement_name', lat:'lat', lon:'lon', countField:'total_related_count', popup:'summary',
+      key:'summary', category:'objects', title:'Зведені НП', desc:'1 точка = 1 населений пункт із пов’язаними записами',
+      table:'map_settlement_summary', point:true, aggregate:true, name:'settlement_name', lat:'lat', lon:'lon', countField:'total_related_count', popup:'summary',
       columns:['settlement_id','settlement_name','region','district','hromada_name','lat','lon','mgrs','stations_count','cover_objects_count','vp_count','sp_count','uav_events_count','detected_count','suppressed_count','cover_events_count','requests_count','corridor_count','protection_count','station_units_count','cover_units_count','first_event_at','last_event_at','first_request_at','last_request_at','total_related_count']
     },
     {
-      key:'uav', category:'objects', title:'БпЛА',
-      desc:'Події БпЛА, згруповані по населених пунктах',
-      table:'map_uav_settlement_summary', point:true, aggregate:true,
-      name:'settlement_name', lat:'lat', lon:'lon', countField:'uav_events_count', popup:'uav',
+      key:'uav', category:'objects', title:'БпЛА', desc:'Події БпЛА, згруповані по населених пунктах',
+      table:'map_uav_settlement_summary', point:true, aggregate:true, name:'settlement_name', lat:'lat', lon:'lon', countField:'uav_events_count', popup:'uav',
       columns:['settlement_id','settlement_name','region','district','hromada_name','lat','lon','mgrs','uav_events_count','detected_count','suppressed_count','cover_count','first_event_at','last_event_at','stations_count','uav_types_count']
     },
     { key:'settlements', category:'objects', title:'Населені пункти', desc:'dict_settlements: lat/lon/MGRS', table:'dict_settlements', columns:['name','region','district','hromada_name','lat','lon','mgrs'], point:true, name:'name', lat:'lat', lon:'lon' },
-    { key:'stations', category:'objects', title:'Станції', desc:'dict_stations: станції та координати', table:'dict_stations', columns:['station_name','station_code','status_text','lat','lon','mgrs'], point:true, name:'station_name', lat:'lat', lon:'lon' },
+    { key:'stations', category:'objects', title:'Станції', desc:'зелений маркер + зона 15 км', table:'dict_stations', columns:['station_name','station_code','status_text','lat','lon','mgrs','coverage_radius_km'], point:true, name:'station_name', lat:'lat', lon:'lon', popup:'station' },
     { key:'vp', category:'objects', title:'ВП', desc:'Об’єкти прикриття типу ВП', table:'dict_cover_objects', columns:['object_name','object_type','type_code','priority','lat','lon','mgrs'], point:true, name:'object_name', lat:'lat', lon:'lon', filter:(r)=>String(r.object_type||r.type_code||'').toLowerCase().includes('вп') || String(r.type_code||'').toUpperCase()==='VP' },
     { key:'sp', category:'objects', title:'СП', desc:'Об’єкти прикриття типу СП', table:'dict_cover_objects', columns:['object_name','object_type','type_code','priority','lat','lon','mgrs'], point:true, name:'object_name', lat:'lat', lon:'lon', filter:(r)=>String(r.object_type||r.type_code||'').toLowerCase().includes('сп') || String(r.type_code||'').toUpperCase()==='SP' },
     { key:'units', category:'objects', title:'Підрозділи', desc:'dict_units: структура підрозділів', table:'dict_units', columns:['unit_name','short_name','unit_type','level_no','note'], point:false },
@@ -46,17 +42,12 @@
   let client=null, counts={}, layerGroup=null, selected=new Set(['summary']);
   function sb(){ if(client) return client; if(!window.supabase||!window.VECTOR_SUPABASE_URL||!window.VECTOR_SUPABASE_KEY) return null; client=window.supabase.createClient(window.VECTOR_SUPABASE_URL,window.VECTOR_SUPABASE_KEY); return client; }
   function isLeafletMap(m){ return !!(m && typeof m.addLayer === 'function' && typeof m.removeLayer === 'function' && typeof m.fitBounds === 'function'); }
-  function getMap(){
-    if(isLeafletMap(window.vectorLeafletMap)) return window.vectorLeafletMap;
-    if(isLeafletMap(window.vectorMap)) return window.vectorMap;
-    try{ const m=eval('vectorMap'); if(isLeafletMap(m)){ window.vectorLeafletMap=m; return m; } }catch{}
-    return null;
-  }
+  function getMap(){ if(isLeafletMap(window.vectorLeafletMap)) return window.vectorLeafletMap; if(isLeafletMap(window.vectorMap)) return window.vectorMap; try{ const m=eval('vectorMap'); if(isLeafletMap(m)){ window.vectorLeafletMap=m; return m; } }catch{} return null; }
 
   function ensureDialog(){
     if(document.querySelector('#mapDataDialog')) return;
     const dialog=document.createElement('section'); dialog.id='mapDataDialog'; dialog.className='map-data-dialog'; dialog.setAttribute('aria-hidden','true');
-    dialog.innerHTML='<div class="map-data-panel"><div class="map-data-head"><div><h2>Дані карти</h2><p>Обери джерела даних для карти. БпЛА — сині, станції — зелені, ВП — червоні, СП — жовті.</p></div><button class="map-data-close" type="button" onclick="closeMapDataDialog()">×</button></div><div class="map-data-sections"><section class="map-data-section"><h3>Об’єкти</h3><div class="map-data-grid" id="mapObjectGrid"></div></section><section class="map-data-section"><h3>Параметри</h3><div class="map-data-grid" id="mapParamGrid"></div></section></div><div class="map-data-actions"><button class="map-data-btn" type="button" id="mapDataRefresh">Оновити</button><button class="map-data-btn map-data-btn--primary" type="button" id="mapDataApply">Застосувати</button></div><div class="map-data-status" id="mapDataStatus">Готово до вибору даних.</div></div>';
+    dialog.innerHTML='<div class="map-data-panel"><div class="map-data-head"><div><h2>Дані карти</h2><p>БпЛА — сині, станції — зелені із зоною 15 км, ВП — червоні, СП — жовті.</p></div><button class="map-data-close" type="button" onclick="closeMapDataDialog()">×</button></div><div class="map-data-sections"><section class="map-data-section"><h3>Об’єкти</h3><div class="map-data-grid" id="mapObjectGrid"></div></section><section class="map-data-section"><h3>Параметри</h3><div class="map-data-grid" id="mapParamGrid"></div></section></div><div class="map-data-actions"><button class="map-data-btn" type="button" id="mapDataRefresh">Оновити</button><button class="map-data-btn map-data-btn--primary" type="button" id="mapDataApply">Застосувати</button></div><div class="map-data-status" id="mapDataStatus">Готово до вибору даних.</div></div>';
     document.body.appendChild(dialog);
     const badges=document.createElement('div'); badges.id='mapLayerBadge'; badges.className='map-layer-badge'; document.body.appendChild(badges);
     dialog.addEventListener('click',e=>{ if(e.target===dialog) closeMapDataDialog(); });
@@ -97,47 +88,22 @@
       (data||[]).filter(r=>!d.filter||d.filter(r)).forEach(r=>{
         const lat=Number(r[d.lat]), lon=Number(r[d.lon]); if(!Number.isFinite(lat)||!Number.isFinite(lon)) return;
         const title=r[d.name]||d.title;
+        if(d.key === 'stations') makeCoverageCircle(lat, lon, r).addTo(layerGroup);
         const marker = d.aggregate ? makeScaledMarker(lat, lon, r, d.countField, d.key) : makePointMarker(lat, lon, d.key);
-        marker.bindPopup(d.popup === 'summary' ? summaryPopup(r) : d.popup === 'uav' ? uavPopup(r) : basicPopup(title, d.title, r)).addTo(layerGroup); added++;
+        marker.bindPopup(d.popup === 'summary' ? summaryPopup(r) : d.popup === 'uav' ? uavPopup(r) : d.popup === 'station' ? stationPopup(title, r) : basicPopup(title, d.title, r)).addTo(layerGroup); added++;
       });
     }
     renderBadges(chosen); status('Дані застосовано. Точок на карті: '+added+'. Параметри: '+chosen.filter(x=>!x.point).map(x=>x.title).join(', '));
     closeMapDataDialog(); if(added) try{ map.fitBounds(layerGroup.getBounds(),{padding:[40,40]}); }catch{}
   }
 
-  function markerStyle(key){
-    const s = LAYER_STYLES[key] || { color:'#D78219', fillColor:'#D78219' };
-    return { color:s.color, fillColor:s.fillColor, weight:2, fillOpacity:.72, opacity:.95 };
-  }
+  function markerStyle(key){ const s = LAYER_STYLES[key] || { color:'#D78219', fillColor:'#D78219' }; return { color:s.color, fillColor:s.fillColor, weight:2, fillOpacity:.72, opacity:.95 }; }
   function makePointMarker(lat, lon, key){ return window.L.circleMarker([lat,lon],{...markerStyle(key),radius:7}); }
-  function makeScaledMarker(lat, lon, r, field, key){
-    const total = Number(r[field] || r.total_related_count || 0);
-    const radius = Math.max(7, Math.min(28, 7 + Math.sqrt(total) * 0.45));
-    return window.L.circleMarker([lat, lon], { ...markerStyle(key), radius });
-  }
-  function summaryPopup(r){
-    return '<b>'+esc(r.settlement_name)+'</b><br><span>Зведений НП</span><hr>'+
-      'Всього пов’язаних: <b>'+esc(r.total_related_count)+'</b><br>'+
-      'Станції: <b>'+esc(r.stations_count)+'</b><br>'+
-      'ВП: <b>'+esc(r.vp_count)+'</b> / СП: <b>'+esc(r.sp_count)+'</b><br>'+
-      'Події БпЛА: <b>'+esc(r.uav_events_count)+'</b><br>'+
-      'Виявлено: <b>'+esc(r.detected_count)+'</b> / Подавлено: <b>'+esc(r.suppressed_count)+'</b><br>'+
-      'Заявки: <b>'+esc(r.requests_count)+'</b><br>'+
-      'Коридори: <b>'+esc(r.corridor_count)+'</b> / Прикриття: <b>'+esc(r.protection_count)+'</b><br>'+
-      'Остання подія: '+esc(formatDate(r.last_event_at))+'<br>'+
-      'Остання заявка: '+esc(formatDate(r.last_request_at));
-  }
-  function uavPopup(r){
-    return '<b>'+esc(r.settlement_name)+'</b><br><span>БпЛА / бойова робота</span><hr>'+
-      'Подій: <b>'+esc(r.uav_events_count)+'</b><br>'+
-      'Виявлено: <b>'+esc(r.detected_count)+'</b><br>'+
-      'Подавлено: <b>'+esc(r.suppressed_count)+'</b><br>'+
-      'Прикриття: <b>'+esc(r.cover_count)+'</b><br>'+
-      'Станцій у подіях: <b>'+esc(r.stations_count)+'</b><br>'+
-      'Типів БпЛА: <b>'+esc(r.uav_types_count)+'</b><br>'+
-      'Перша подія: '+esc(formatDate(r.first_event_at))+'<br>'+
-      'Остання подія: '+esc(formatDate(r.last_event_at));
-  }
+  function makeCoverageCircle(lat, lon, r){ const km=Number(r.coverage_radius_km || 15); return window.L.circle([lat,lon],{...markerStyle('stations'),radius:km*1000,weight:1,fillOpacity:.08,opacity:.55}); }
+  function makeScaledMarker(lat, lon, r, field, key){ const total = Number(r[field] || r.total_related_count || 0); const radius = Math.max(7, Math.min(28, 7 + Math.sqrt(total) * 0.45)); return window.L.circleMarker([lat, lon], { ...markerStyle(key), radius }); }
+  function summaryPopup(r){ return '<b>'+esc(r.settlement_name)+'</b><br><span>Зведений НП</span><hr>'+'Всього пов’язаних: <b>'+esc(r.total_related_count)+'</b><br>'+'Станції: <b>'+esc(r.stations_count)+'</b><br>'+'ВП: <b>'+esc(r.vp_count)+'</b> / СП: <b>'+esc(r.sp_count)+'</b><br>'+'Події БпЛА: <b>'+esc(r.uav_events_count)+'</b><br>'+'Виявлено: <b>'+esc(r.detected_count)+'</b> / Подавлено: <b>'+esc(r.suppressed_count)+'</b><br>'+'Заявки: <b>'+esc(r.requests_count)+'</b><br>'+'Коридори: <b>'+esc(r.corridor_count)+'</b> / Прикриття: <b>'+esc(r.protection_count)+'</b><br>'+'Остання подія: '+esc(formatDate(r.last_event_at))+'<br>'+'Остання заявка: '+esc(formatDate(r.last_request_at)); }
+  function uavPopup(r){ return '<b>'+esc(r.settlement_name)+'</b><br><span>БпЛА / бойова робота</span><hr>'+'Подій: <b>'+esc(r.uav_events_count)+'</b><br>'+'Виявлено: <b>'+esc(r.detected_count)+'</b><br>'+'Подавлено: <b>'+esc(r.suppressed_count)+'</b><br>'+'Прикриття: <b>'+esc(r.cover_count)+'</b><br>'+'Станцій у подіях: <b>'+esc(r.stations_count)+'</b><br>'+'Типів БпЛА: <b>'+esc(r.uav_types_count)+'</b><br>'+'Перша подія: '+esc(formatDate(r.first_event_at))+'<br>'+'Остання подія: '+esc(formatDate(r.last_event_at)); }
+  function stationPopup(title, r){ const km=Number(r.coverage_radius_km || 15); return '<b>'+esc(title)+'</b><br><span>Станція РЕБ</span><hr>'+'Код: <b>'+esc(r.station_code||'—')+'</b><br>'+'Статус: <b>'+esc(r.status_text||'—')+'</b><br>'+'Радіус покриття: <b>'+esc(km)+' км</b><br>'+'MGRS: '+esc(r.mgrs||'—'); }
   function basicPopup(title, sourceTitle, r){ return '<b>'+esc(title)+'</b><br>'+sourceTitle+'<br>'+Object.entries(r).slice(0,8).map(([k,v])=>esc(k)+': '+esc(v??'')).join('<br>'); }
   function formatDate(v){ if(!v) return '—'; try{return new Date(v).toLocaleString('uk-UA');}catch{return v;} }
   function renderBadges(chosen){ const box=document.querySelector('#mapLayerBadge'); if(!box) return; box.classList.toggle('is-visible',chosen.length>0); box.innerHTML=chosen.map(d=>'<span style="border-color:'+(LAYER_STYLES[d.key]?.fillColor||'#D78219')+'">'+d.title+'</span>').join(''); }
