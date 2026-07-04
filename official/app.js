@@ -50,8 +50,8 @@ function injectAsset(tag, attrs) {
 function loadLibraryAssets() {
   injectAsset('link', { rel: 'stylesheet', href: './supabase-library.css?v=20260704-1' });
   injectAsset('script', { src: './supabase-library.js?v=20260704-1', defer: true });
-  injectAsset('link', { rel: 'stylesheet', href: './map-data.css?v=20260704-2' });
-  injectAsset('script', { src: './map-data.js?v=20260704-4', defer: true });
+  injectAsset('link', { rel: 'stylesheet', href: './map-data.css?v=20260704-7' });
+  injectAsset('script', { src: './map-data.js?v=20260704-7', defer: true });
 }
 loadLibraryAssets();
 forceNavVisibility();
