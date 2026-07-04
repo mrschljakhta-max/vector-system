@@ -2,10 +2,31 @@
   let client=null, coverageGroup=null, stations=[];
   const RADIUS_KM=15;
   const COVERAGE_STYLE={color:'#22C55E',fillColor:'#22C55E',weight:1,opacity:.55,fillOpacity:.08,vectorLayerKey:'polygons'};
+  let stationRadiusHiddenByPolygon=false;
 
   function sb(){ if(client) return client; if(!window.supabase||!window.VECTOR_SUPABASE_URL||!window.VECTOR_SUPABASE_KEY) return null; client=window.supabase.createClient(window.VECTOR_SUPABASE_URL,window.VECTOR_SUPABASE_KEY); return client; }
   function isMap(m){ return !!(m && typeof m.addLayer==='function' && typeof m.fitBounds==='function'); }
   function getMap(){ if(isMap(window.vectorLeafletMap)) return window.vectorLeafletMap; if(isMap(window.vectorMap)) return window.vectorMap; try{const m=eval('vectorMap'); if(isMap(m)){window.vectorLeafletMap=m; return m;}}catch{} return null; }
+
+  function rememberOriginal(layer){
+    if(!layer||!layer.setStyle) return;
+    if(!layer.__vectorPolygonOriginalStyle){
+      const o=layer.options||{};
+      layer.__vectorPolygonOriginalStyle={opacity:o.opacity??1,fillOpacity:o.fillOpacity??0.7,weight:o.weight??2};
+    }
+  }
+  function hideStationRadii(){
+    const set=window.vectorLayerRegistry?.stationRadius;
+    if(!set) return;
+    set.forEach(layer=>{rememberOriginal(layer);layer.setStyle?.({opacity:0,fillOpacity:0,weight:0});const el=layer.getElement?.();if(el)el.style.pointerEvents='none';});
+    stationRadiusHiddenByPolygon=true;
+  }
+  function restoreStationRadii(){
+    const set=window.vectorLayerRegistry?.stationRadius;
+    if(!set) return;
+    set.forEach(layer=>{if(layer.__vectorPolygonOriginalStyle)layer.setStyle?.(layer.__vectorPolygonOriginalStyle);const el=layer.getElement?.();if(el)el.style.pointerEvents='';});
+    stationRadiusHiddenByPolygon=false;
+  }
 
   function mountButton(){
     if(document.querySelector('#openPolygonControl')) return;
@@ -19,7 +40,7 @@
   function ensurePanel(){
     let p=document.querySelector('#vectorPolygonPanel'); if(p) return p;
     p=document.createElement('section'); p.id='vectorPolygonPanel';
-    p.innerHTML='<div class="vpp-head"><div><b>Полігон</b><span>Злиття радіусів станцій у єдину площину</span></div><button type="button" id="vppClose">×</button></div><div id="vppStatus">Готово.</div><div id="vppList"><label class="vpp-row"><input id="coverageToggle" type="checkbox" checked><span class="vpp-title"><i class="vpp-dot"></i>Покриття станцій 15 км</span><span class="vpp-count" id="coverageCount">—</span></label></div><div class="vpp-actions"><button id="vppRefresh" type="button">Оновити</button><button id="vppApply" type="button">Застосувати</button></div>';
+    p.innerHTML='<div class="vpp-head"><div><b>Полігон</b><span>Перебудова радіусів станцій у єдину площину без внутрішніх перетинів</span></div><button type="button" id="vppClose">×</button></div><div id="vppStatus">Готово.</div><div id="vppList"><label class="vpp-row"><input id="coverageToggle" type="checkbox" checked><span class="vpp-title"><i class="vpp-dot"></i>Покриття станцій 15 км</span><span class="vpp-count" id="coverageCount">—</span></label></div><div class="vpp-actions"><button id="vppRefresh" type="button">Оновити</button><button id="vppApply" type="button">Застосувати</button></div>';
     document.body.appendChild(p);
     const st=document.createElement('style'); st.id='vectorPolygonControlStyles'; st.textContent=`
       .vector-polygon-tool-btn{position:fixed;right:92px;top:364px;width:54px;height:54px;z-index:99999;border:1px solid rgba(255,255,255,.18);background:rgba(9,15,26,.96);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:14px;box-shadow:0 16px 38px rgba(0,0,0,.42)}
@@ -43,7 +64,7 @@
     if(error){ stations=[]; status('Помилка: '+error.message); return; }
     stations=(data||[]).filter(s=>Number.isFinite(Number(s.lat))&&Number.isFinite(Number(s.lon)));
     const cnt=document.querySelector('#coverageCount'); if(cnt) cnt.textContent=stations.length;
-    status('Станцій із координатами: '+stations.length+'. Радіуси будуть злиті в один полігон.');
+    status('Станцій із координатами: '+stations.length+'. При застосуванні окремі радіуси будуть замінені одним полігоном.');
   }
 
   function ensureGroup(map){ if(!coverageGroup) coverageGroup=window.L.layerGroup().addTo(map); else coverageGroup.clearLayers(); return coverageGroup; }
@@ -56,30 +77,31 @@
 
   async function applyCoveragePolygon(){
     const map=getMap(); if(!map){status('Карта ще не ініціалізована.'); return;}
-    if(!document.querySelector('#coverageToggle')?.checked){ ensureGroup(map); status('Полігон покриття вимкнено.'); return; }
+    if(!document.querySelector('#coverageToggle')?.checked){ ensureGroup(map); restoreStationRadii(); status('Полігон покриття вимкнено. Окремі радіуси повернено.'); return; }
     if(!stations.length) await loadStations();
     if(!stations.length){status('Немає станцій із координатами.'); return;}
-    status('Формую єдиний полігон покриття...');
+    status('Перебудовую радіуси в єдиний полігон...');
     const group=ensureGroup(map);
+    hideStationRadii();
     try{
       const turf=await ensureTurf();
       const circles=stations.map(s=>turf.circle([Number(s.lon),Number(s.lat)], Number(s.coverage_radius_km||RADIUS_KM), {steps:64, units:'kilometers'}));
       let merged=circles[0];
       for(let i=1;i<circles.length;i++){
-        try{ merged=turf.union(merged,circles[i]) || merged; }catch{ group.addLayer(window.L.circle([Number(stations[i].lat),Number(stations[i].lon)],{radius:Number(stations[i].coverage_radius_km||RADIUS_KM)*1000,...COVERAGE_STYLE})); }
+        try{ merged=turf.union(merged,circles[i]) || merged; }catch{ console.warn('Union failed for station',stations[i]); }
       }
       const layer=window.L.geoJSON(merged,{style:COVERAGE_STYLE}).bindPopup('<b>Полігон покриття станцій</b><br>Радіус: '+RADIUS_KM+' км<br>Станцій: '+stations.length);
       layer.addTo(group);
       if(window.vectorLayerRegistry){ window.vectorLayerRegistry.polygons=window.vectorLayerRegistry.polygons||new Set(); group.eachLayer(l=>window.vectorLayerRegistry.polygons.add(l)); }
-      status('Полігон покриття сформовано. Станцій: '+stations.length);
+      status('Окремі радіуси приховано, показано один полігон покриття. Станцій: '+stations.length);
       try{map.fitBounds(group.getBounds(),{padding:[40,40]});}catch{}
     }catch(e){
       console.warn(e);
-      stations.forEach(s=>window.L.circle([Number(s.lat),Number(s.lon)],{radius:Number(s.coverage_radius_km||RADIUS_KM)*1000,...COVERAGE_STYLE}).addTo(group));
-      status('Не вдалося злити геометрію, показано fallback-радіуси.');
+      restoreStationRadii();
+      status('Не вдалося злити геометрію. Окремі радіуси повернено.');
     }
   }
 
-  function boot(){mountButton();ensurePanel();}
+  function boot(){mountButton();ensurePanel();if(stationRadiusHiddenByPolygon)hideStationRadii();}
   window.addEventListener('load',()=>{boot();setInterval(boot,1000)}); document.addEventListener('click',()=>setTimeout(boot,120));
 })();
