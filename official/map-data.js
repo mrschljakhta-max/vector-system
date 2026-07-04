@@ -14,6 +14,8 @@
     vp:{color:'#EF4444',fillColor:'#EF4444'}, sp:{color:'#FACC15',fillColor:'#FACC15'}, settlements:{color:'#94A3B8',fillColor:'#94A3B8'},
     routes:{color:'#F97316',fillColor:'#F97316'}, points:{color:'#EC4899',fillColor:'#EC4899'}
   };
+  const LABEL_KEYS = {summary:'labelsSummary',uav:'labelsUav',stations:'labelsStations',vp:'labelsVp',sp:'labelsSp',points:'labelsPoints',settlements:'labelsSettlements'};
+  const LABEL_COLORS = {summary:'#8B5CF6',uav:'#1D4ED8',stations:'#15803D',vp:'#DC2626',sp:'#B45309',points:'#DB2777',settlements:'#475569'};
 
   const DATASETS = [
     { key:'summary', category:'objects', title:'Зведені НП', desc:'1 точка = 1 населений пункт із пов’язаними записами', table:'map_settlement_summary', point:true, aggregate:true, name:'settlement_name', lat:'lat', lon:'lon', countField:'total_related_count', popup:'summary', columns:['settlement_id','settlement_name','region','district','hromada_name','lat','lon','mgrs','stations_count','cover_objects_count','vp_count','sp_count','uav_events_count','detected_count','suppressed_count','cover_events_count','requests_count','corridor_count','protection_count','station_units_count','cover_units_count','first_event_at','last_event_at','first_request_at','last_request_at','total_related_count'] },
@@ -39,13 +41,13 @@
   function ensureDialog(){
     if(document.querySelector('#mapDataDialog')) return;
     const dialog=document.createElement('section'); dialog.id='mapDataDialog'; dialog.className='map-data-dialog'; dialog.setAttribute('aria-hidden','true');
-    dialog.innerHTML='<div class="map-data-panel"><div class="map-data-head"><div><h2>Дані карти</h2><p>Шляхи прокладаються по дорогах; якщо дорогу не знайдено — пунктиром показується службовий fallback.</p></div><button class="map-data-close" type="button" onclick="closeMapDataDialog()">×</button></div><div class="map-data-sections"><section class="map-data-section"><h3>Об’єкти</h3><div class="map-data-grid" id="mapObjectGrid"></div></section><section class="map-data-section"><h3>Параметри</h3><div class="map-data-grid" id="mapParamGrid"></div></section></div><div class="map-data-actions"><button class="map-data-btn" type="button" id="mapDataRefresh">Оновити</button><button class="map-data-btn map-data-btn--primary" type="button" id="mapDataApply">Застосувати</button></div><div class="map-data-status" id="mapDataStatus">Готово до вибору даних.</div></div>';
+    dialog.innerHTML='<div class="map-data-panel"><div class="map-data-head"><div><h2>Дані карти</h2><p>Підписи створюються окремими незалежними шарами без рамок.</p></div><button class="map-data-close" type="button" onclick="closeMapDataDialog()">×</button></div><div class="map-data-sections"><section class="map-data-section"><h3>Об’єкти</h3><div class="map-data-grid" id="mapObjectGrid"></div></section><section class="map-data-section"><h3>Параметри</h3><div class="map-data-grid" id="mapParamGrid"></div></section></div><div class="map-data-actions"><button class="map-data-btn" type="button" id="mapDataRefresh">Оновити</button><button class="map-data-btn map-data-btn--primary" type="button" id="mapDataApply">Застосувати</button></div><div class="map-data-status" id="mapDataStatus">Готово до вибору даних.</div></div>';
     document.body.appendChild(dialog);
     const badges=document.createElement('div'); badges.id='mapLayerBadge'; badges.className='map-layer-badge'; document.body.appendChild(badges);
     dialog.addEventListener('click',e=>{ if(e.target===dialog) closeMapDataDialog(); });
     document.querySelector('#mapDataRefresh')?.addEventListener('click',loadCounts);
     document.querySelector('#mapDataApply')?.addEventListener('click',applyDataSelection);
-    renderCards(); loadCounts();
+    renderCards(); loadCounts(); ensureLabelStyles();
   }
 
   function renderCards(){
@@ -73,7 +75,7 @@
     const map=getMap(); if(!map){ status('Карта ще не ініціалізована. Закрий вікно, відкрий карту і повтори.'); return; }
     if(!layerGroup) layerGroup=window.L.layerGroup().addTo(map); else layerGroup.clearLayers();
     const chosen=DATASETS.filter(d=>selected.has(d.key)); let added=0;
-    status('Завантажую вибрані джерела...');
+    status('Завантажую вибрані джерела...'); ensureLabelStyles();
     for(const d of chosen.filter(x=>x.point||x.line)){
       const {data,error}=await c.from(d.table).select(d.columns.join(',')).limit(2000);
       if(error){ console.warn(error); status('Помилка джерела '+d.title+': '+error.message); continue; }
@@ -84,6 +86,7 @@
         if(d.key === 'stations') makeCoverageCircle(lat, lon, r).addTo(layerGroup);
         const marker = d.aggregate ? makeScaledMarker(lat, lon, r, d.countField, d.key) : makePointMarker(lat, lon, d.key);
         marker.bindPopup(d.popup === 'summary' ? summaryPopup(r) : d.popup === 'uav' ? uavPopup(r) : d.popup === 'station' ? stationPopup(title, r) : d.popup === 'point' ? pointPopup(title,r) : basicPopup(title, d.title, r)).addTo(layerGroup); added++;
+        addTextLabel(lat, lon, title, d.key);
       }
     }
     renderBadges(chosen); status('Дані застосовано. Об’єктів на карті: '+added+'.');
@@ -100,10 +103,7 @@
     if(!a.every(Number.isFinite)||!b.every(Number.isFinite)) return null;
     const cacheKey=[a.join(','),b.join(',')].join('|');
     let coords = routeCache.get(cacheKey);
-    if(!coords){
-      coords = await fetchRoadGeometry(a,b);
-      routeCache.set(cacheKey, coords || 'fallback');
-    }
+    if(!coords){ coords = await fetchRoadGeometry(a,b); routeCache.set(cacheKey, coords || 'fallback'); }
     if(coords === 'fallback') coords = null;
     const lineCoords = coords || [a,b];
     const options = coords ? {...markerStyle('routes'), weight:5, opacity:.82} : {...markerStyle('routes'), weight:3, opacity:.55, dashArray:'8 8'};
@@ -112,15 +112,11 @@
 
   async function fetchRoadGeometry(a,b){
     const url='https://router.project-osrm.org/route/v1/driving/'+a[1]+','+a[0]+';'+b[1]+','+b[0]+'?overview=full&geometries=geojson&alternatives=false&steps=false';
-    try{
-      const res=await fetch(url,{mode:'cors'});
-      if(!res.ok) return null;
-      const json=await res.json();
-      const line=json?.routes?.[0]?.geometry?.coordinates;
-      if(!Array.isArray(line)||line.length<2) return null;
-      return line.map(([lon,lat])=>[lat,lon]);
-    }catch(e){ console.warn('Road routing failed',e); return null; }
+    try{ const res=await fetch(url,{mode:'cors'}); if(!res.ok) return null; const json=await res.json(); const line=json?.routes?.[0]?.geometry?.coordinates; if(!Array.isArray(line)||line.length<2) return null; return line.map(([lon,lat])=>[lat,lon]); }catch(e){ console.warn('Road routing failed',e); return null; }
   }
+
+  function ensureLabelStyles(){ if(document.querySelector('#vectorMapLabelStyles')) return; const st=document.createElement('style'); st.id='vectorMapLabelStyles'; st.textContent='.vector-map-label{background:transparent!important;border:0!important;box-shadow:none!important;font-family:Rajdhani,Arial,sans-serif;font-size:15px;font-weight:800;letter-spacing:.08em;line-height:1;white-space:nowrap;text-transform:uppercase;pointer-events:none!important}.vector-map-label__text{background:transparent!important;border:0!important;padding:0!important;margin:0!important;text-shadow:0 1px 2px rgba(255,255,255,.95),0 -1px 2px rgba(255,255,255,.95),1px 0 2px rgba(255,255,255,.95),-1px 0 2px rgba(255,255,255,.95),0 2px 5px rgba(0,0,0,.25)}'; document.head.appendChild(st); }
+  function addTextLabel(lat, lon, title, key){ const labelKey=LABEL_KEYS[key]; if(!labelKey||!title||!window.L||!layerGroup) return; const icon=window.L.divIcon({className:'vector-map-label',html:'<span class="vector-map-label__text" style="color:'+LABEL_COLORS[key]+'">'+esc(title)+'</span>',iconSize:null,iconAnchor:[-10,-18]}); const label=window.L.marker([lat,lon],{icon,interactive:false,keyboard:false,vectorLabelLayer:true,vectorLayerKey:labelKey}); label.addTo(layerGroup); }
 
   function summaryPopup(r){ return '<b>'+esc(r.settlement_name)+'</b><br><span>Зведений НП</span><hr>'+'Всього пов’язаних: <b>'+esc(r.total_related_count)+'</b><br>'+'Станції: <b>'+esc(r.stations_count)+'</b><br>'+'ВП: <b>'+esc(r.vp_count)+'</b> / СП: <b>'+esc(r.sp_count)+'</b><br>'+'Події БпЛА: <b>'+esc(r.uav_events_count)+'</b><br>'+'Виявлено: <b>'+esc(r.detected_count)+'</b> / Подавлено: <b>'+esc(r.suppressed_count)+'</b><br>'+'Заявки: <b>'+esc(r.requests_count)+'</b><br>'+'Коридори: <b>'+esc(r.corridor_count)+'</b> / Прикриття: <b>'+esc(r.protection_count)+'</b><br>'+'Остання подія: '+esc(formatDate(r.last_event_at))+'<br>'+'Остання заявка: '+esc(formatDate(r.last_request_at)); }
   function uavPopup(r){ return '<b>'+esc(r.settlement_name)+'</b><br><span>БпЛА / бойова робота</span><hr>'+'Подій: <b>'+esc(r.uav_events_count)+'</b><br>'+'Виявлено: <b>'+esc(r.detected_count)+'</b><br>'+'Подавлено: <b>'+esc(r.suppressed_count)+'</b><br>'+'Прикриття: <b>'+esc(r.cover_count)+'</b><br>'+'Станцій у подіях: <b>'+esc(r.stations_count)+'</b><br>'+'Типів БпЛА: <b>'+esc(r.uav_types_count)+'</b><br>'+'Перша подія: '+esc(formatDate(r.first_event_at))+'<br>'+'Остання подія: '+esc(formatDate(r.last_event_at)); }
