@@ -13,7 +13,16 @@
     return null;
   }
 
+  function loadLabelCollision(){
+    if(document.querySelector('script[src^="./map-label-collision.js"]')) return;
+    const s=document.createElement('script');
+    s.src='./map-label-collision.js?v=20260704-1';
+    s.defer=true;
+    document.head.appendChild(s);
+  }
+
   function mount() {
+    loadLabelCollision();
     const nav = document.querySelector('.hover-nav--right');
     if (!nav || document.querySelector('#networkBtn')) return;
     const b = document.createElement('button');
@@ -77,6 +86,7 @@
     document.querySelector('#networkBtn')?.classList.toggle('is-active', routeVisible || pointVisible);
     document.querySelector('#networkRoutesCard input') && (document.querySelector('#networkRoutesCard input').checked = routeVisible);
     document.querySelector('#networkPointsCard input') && (document.querySelector('#networkPointsCard input').checked = pointVisible);
+    window.vectorArrangeLabels?.();
   }
 
   function esc(v) { return String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
