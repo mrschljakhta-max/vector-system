@@ -9,7 +9,62 @@
   const fileRegistryKey = 'vector-reference-files';
   let current = null;
 
+  function installEmergencyNav() {
+    if (!document.querySelector('#vectorEmergencyNavStyle')) {
+      const style = document.createElement('style');
+      style.id = 'vectorEmergencyNavStyle';
+      style.textContent = `
+        .vector-emergency-nav{position:fixed;top:0;bottom:0;z-index:2147483000;display:flex;flex-direction:column;justify-content:center;gap:14px;width:72px;padding:18px 12px;background:rgba(9,11,14,.78);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(18px);overflow:hidden;transition:width .2s ease}.vector-emergency-nav:hover{width:250px;background:rgba(9,11,14,.92)}.vector-emergency-nav--left{left:0;border-left:0}.vector-emergency-nav--right{right:0;border-right:0}.vector-emergency-nav--right:hover{width:190px}.vector-emergency-nav button{width:100%;height:56px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.055);color:#f4f2ee;cursor:pointer;display:grid;grid-template-columns:42px 1fr;align-items:center;gap:10px;padding:0 12px;text-align:left;font:700 16px Rajdhani,Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px)}.vector-emergency-nav button:hover,.vector-emergency-nav button.is-active{border-color:rgba(215,130,25,.72);color:#d78219;background:rgba(215,130,25,.10)}.vector-emergency-nav img{width:28px;height:28px;object-fit:contain;filter:brightness(0) invert(1)}.vector-emergency-nav button:hover img,.vector-emergency-nav button.is-active img{filter:sepia(1) saturate(4) hue-rotate(350deg) brightness(1.1)}.vector-emergency-nav span:last-child{opacity:0;white-space:nowrap;transform:translateX(-8px);transition:opacity .18s ease,transform .18s ease}.vector-emergency-nav:hover span:last-child{opacity:1;transform:translateX(0)}.vector-emergency-exit{margin-top:auto}.vector-emergency-icon{font-size:28px;text-align:center;line-height:1}`;
+      document.head.appendChild(style);
+    }
+    if (!document.querySelector('#vectorEmergencyLeft')) {
+      const left = document.createElement('aside');
+      left.id = 'vectorEmergencyLeft';
+      left.className = 'vector-emergency-nav vector-emergency-nav--left';
+      left.innerHTML = '<button class="is-active" type="button" data-target="map"><img src="../assets/map-pin-share.svg" alt=""><span>Карта</span></button><button type="button" data-target="refs"><img src="../assets/book-icon.svg" alt=""><span>Бібліотека</span></button><button class="vector-emergency-exit" type="button" data-action="logout"><span class="vector-emergency-icon">⎋</span><span>Вихід</span></button>';
+      document.body.appendChild(left);
+      left.addEventListener('click', (e) => {
+        const button = e.target.closest('button'); if (!button) return;
+        if (button.dataset.action === 'logout') { window.logoutVector?.(); hideEmergencyNav(); return; }
+        showSectionFallback(button.dataset.target);
+      });
+    }
+    if (!document.querySelector('#vectorEmergencyRight')) {
+      const right = document.createElement('aside');
+      right.id = 'vectorEmergencyRight';
+      right.className = 'vector-emergency-nav vector-emergency-nav--right';
+      right.innerHTML = '<button type="button" data-action="data"><img src="../assets/database-import.svg" alt=""><span>Дані</span></button><button type="button" data-action="maps"><span class="vector-emergency-icon">▧</span><span>Типи карт</span></button>';
+      document.body.appendChild(right);
+      right.addEventListener('click', (e) => {
+        const button = e.target.closest('button'); if (!button) return;
+        if (button.dataset.action === 'data') window.openMapDataDialog?.();
+        if (button.dataset.action === 'maps') window.openMapDialog?.();
+      });
+    }
+    updateEmergencyNavState();
+  }
+
+  function hideEmergencyNav() {
+    document.querySelector('#vectorEmergencyLeft')?.remove();
+    document.querySelector('#vectorEmergencyRight')?.remove();
+  }
+
+  function updateEmergencyNavState() {
+    const workspace = document.querySelector('#workspace');
+    const visible = workspace?.classList.contains('is-open') || workspace?.getAttribute('aria-hidden') === 'false';
+    document.querySelectorAll('.vector-emergency-nav').forEach((nav) => { nav.style.display = visible ? 'flex' : 'none'; });
+  }
+
+  function showSectionFallback(id) {
+    document.querySelectorAll('.section').forEach((section) => section.classList.toggle('is-active', section.id === id));
+    document.querySelectorAll('.nav__item').forEach((item) => item.classList.toggle('is-active', item.dataset.section === id));
+    document.querySelectorAll('#vectorEmergencyLeft button[data-target]').forEach((item) => item.classList.toggle('is-active', item.dataset.target === id));
+    setTimeout(() => { try { window.vectorLeafletMap?.invalidateSize?.(); } catch {} }, 80);
+  }
+
   function mount() {
+    installEmergencyNav();
+    updateEmergencyNavState();
     const library = document.querySelector('#refs .library-head');
     if (!library) return false;
     let panel = document.querySelector('#pqImporter');
@@ -54,7 +109,7 @@
       const rows = await readTable(file);
       if (!rows.length) throw new Error('Таблиця порожня');
       const headers = normalizeHeaders(rows[0]);
-      const body = rows.slice(1).map((row) => headers.map((_, index) => row[index] ?? ''));
+      const body = rows.slice(1).map((row, index) => headers.map((_, index) => row[index] ?? ''));
       current = { id: makeId(), fileName: file.name, totalRows: Math.max(rows.length - 1, 0), headers, body, preview: body.slice(0, 50), mapping: autoMap(headers), createdAt: new Date().toISOString() };
       renderPreview();
       setDefaultCategory(file.name);
@@ -135,4 +190,5 @@
 
   window.addEventListener('load', () => { mount(); setTimeout(mount, 300); setTimeout(mount, 1000); });
   document.addEventListener('click', () => setTimeout(mount, 80));
+  setInterval(() => { installEmergencyNav(); updateEmergencyNavState(); }, 1000);
 })();
