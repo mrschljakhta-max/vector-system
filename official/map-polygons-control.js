@@ -1,6 +1,7 @@
 (() => {
   let client=null, coverageGroup=null, stations=[];
   const RADIUS_KM=15;
+  const COVERAGE_STYLE={color:'#22C55E',fillColor:'#22C55E',weight:1,opacity:.55,fillOpacity:.08,vectorLayerKey:'polygons'};
 
   function sb(){ if(client) return client; if(!window.supabase||!window.VECTOR_SUPABASE_URL||!window.VECTOR_SUPABASE_KEY) return null; client=window.supabase.createClient(window.VECTOR_SUPABASE_URL,window.VECTOR_SUPABASE_KEY); return client; }
   function isMap(m){ return !!(m && typeof m.addLayer==='function' && typeof m.fitBounds==='function'); }
@@ -65,16 +66,16 @@
       const circles=stations.map(s=>turf.circle([Number(s.lon),Number(s.lat)], Number(s.coverage_radius_km||RADIUS_KM), {steps:64, units:'kilometers'}));
       let merged=circles[0];
       for(let i=1;i<circles.length;i++){
-        try{ merged=turf.union(merged,circles[i]) || merged; }catch{ group.addLayer(window.L.circle([Number(stations[i].lat),Number(stations[i].lon)],{radius:Number(stations[i].coverage_radius_km||RADIUS_KM)*1000,color:'#22C55E',fillColor:'#22C55E',weight:1,opacity:.55,fillOpacity:.08,vectorLayerKey:'polygons'})); }
+        try{ merged=turf.union(merged,circles[i]) || merged; }catch{ group.addLayer(window.L.circle([Number(stations[i].lat),Number(stations[i].lon)],{radius:Number(stations[i].coverage_radius_km||RADIUS_KM)*1000,...COVERAGE_STYLE})); }
       }
-      const layer=window.L.geoJSON(merged,{style:{color:'#16A34A',fillColor:'#22C55E',weight:2,opacity:.9,fillOpacity:.18,vectorLayerKey:'polygons'}}).bindPopup('<b>Полігон покриття станцій</b><br>Радіус: '+RADIUS_KM+' км<br>Станцій: '+stations.length);
+      const layer=window.L.geoJSON(merged,{style:COVERAGE_STYLE}).bindPopup('<b>Полігон покриття станцій</b><br>Радіус: '+RADIUS_KM+' км<br>Станцій: '+stations.length);
       layer.addTo(group);
       if(window.vectorLayerRegistry){ window.vectorLayerRegistry.polygons=window.vectorLayerRegistry.polygons||new Set(); group.eachLayer(l=>window.vectorLayerRegistry.polygons.add(l)); }
       status('Полігон покриття сформовано. Станцій: '+stations.length);
       try{map.fitBounds(group.getBounds(),{padding:[40,40]});}catch{}
     }catch(e){
       console.warn(e);
-      stations.forEach(s=>window.L.circle([Number(s.lat),Number(s.lon)],{radius:Number(s.coverage_radius_km||RADIUS_KM)*1000,color:'#22C55E',fillColor:'#22C55E',weight:1,opacity:.55,fillOpacity:.08,vectorLayerKey:'polygons'}).addTo(group));
+      stations.forEach(s=>window.L.circle([Number(s.lat),Number(s.lon)],{radius:Number(s.coverage_radius_km||RADIUS_KM)*1000,...COVERAGE_STYLE}).addTo(group));
       status('Не вдалося злити геометрію, показано fallback-радіуси.');
     }
   }
