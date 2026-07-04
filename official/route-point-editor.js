@@ -14,5 +14,18 @@
   function status(t){ const e=document.querySelector('#rpStatus'); if(e)e.textContent=t; }
   function update(){ const e=document.querySelector('#rpDirty'); if(e)e.textContent=dirty.size+' змін'; }
   function esc(v){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-  window.addEventListener('load',()=>{mount(); setTimeout(mount,800);}); document.addEventListener('click',()=>setTimeout(mount,150));
+
+  async function injectNetworkCards(){
+    const sections=document.querySelector('.map-data-sections');
+    if(!sections||document.querySelector('#networkDataSection'))return;
+    const c=sb(); let rc='…', pc='…';
+    if(c){ const r=await c.from('map_routes').select('*',{count:'exact',head:true}); const p=await c.from('map_points').select('*',{count:'exact',head:true}); rc=r.count??'…'; pc=p.count??'…'; }
+    const sec=document.createElement('section'); sec.id='networkDataSection'; sec.className='map-data-section';
+    sec.innerHTML='<h3>Мережа</h3><div class="map-data-grid"><label class="map-data-card" id="networkRoutesCard"><input type="checkbox"><span><strong><i style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#F97316;margin-right:8px"></i>Шляхи</strong><small>дороги між населеними пунктами з призначенням</small></span><b class="map-data-count">'+rc+'</b></label><label class="map-data-card" id="networkPointsCard"><input type="checkbox"><span><strong><i style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#EC4899;margin-right:8px"></i>Пункти</strong><small>штаби, РЗ, РО, КП, КСП у населених пунктах</small></span><b class="map-data-count">'+pc+'</b></label></div>';
+    sections.insertBefore(sec,sections.lastElementChild);
+    sec.querySelector('#networkRoutesCard input').onchange=e=>{sec.querySelector('#networkRoutesCard').classList.toggle('is-active',e.target.checked); window.vectorNetwork?.setRoutes?.(e.target.checked);};
+    sec.querySelector('#networkPointsCard input').onchange=e=>{sec.querySelector('#networkPointsCard').classList.toggle('is-active',e.target.checked); window.vectorNetwork?.setPoints?.(e.target.checked);};
+  }
+  function patchDialog(){ if(window.openMapDataDialog&&!window.openMapDataDialog.__rpPatch){ const old=window.openMapDataDialog; window.openMapDataDialog=function(){old(); setTimeout(injectNetworkCards,120);}; window.openMapDataDialog.__rpPatch=true; } }
+  window.addEventListener('load',()=>{mount(); patchDialog(); setTimeout(mount,800); setTimeout(patchDialog,800);}); document.addEventListener('click',()=>{setTimeout(mount,150); setTimeout(patchDialog,150); setTimeout(injectNetworkCards,250);});
 })();
