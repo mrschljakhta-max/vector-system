@@ -11,21 +11,33 @@ const workspace = document.querySelector('#workspace');
 const clearFiles = document.querySelector('#clearFiles');
 const fileList = document.querySelector('#fileList');
 
+function injectAsset(tag, attrs) {
+  const selector = tag === 'link' ? `link[href^="${attrs.href.split('?')[0]}"]` : `script[src^="${attrs.src.split('?')[0]}"]`;
+  if (document.querySelector(selector)) return;
+  const el = document.createElement(tag);
+  Object.entries(attrs).forEach(([key, value]) => { el[key] = value; });
+  document.head.appendChild(el);
+}
+
 function loadLibraryAssets() {
-  if (!document.querySelector('link[href^="./supabase-library.css"]')) {
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = './supabase-library.css?v=20260704-1';
-    document.head.appendChild(link);
-  }
-  if (!document.querySelector('script[src^="./supabase-library.js"]')) {
-    const script = document.createElement('script');
-    script.src = './supabase-library.js?v=20260704-1';
-    script.defer = true;
-    document.head.appendChild(script);
-  }
+  injectAsset('link', { rel: 'stylesheet', href: './supabase-library.css?v=20260704-1' });
+  injectAsset('script', { src: './supabase-library.js?v=20260704-1', defer: true });
+  injectAsset('link', { rel: 'stylesheet', href: './map-data.css?v=20260704-1' });
+  injectAsset('script', { src: './map-data.js?v=20260704-1', defer: true });
 }
 loadLibraryAssets();
+
+function ensureMapDataButton() {
+  const rightNav = document.querySelector('.hover-nav--right');
+  if (!rightNav || document.querySelector('#openMapDataButton')) return;
+  const btn = document.createElement('button');
+  btn.className = 'hover-nav__item';
+  btn.id = 'openMapDataButton';
+  btn.type = 'button';
+  btn.innerHTML = '<img src="../assets/database-import.svg" alt=""><span>Дані</span>';
+  btn.addEventListener('click', () => window.openMapDataDialog?.());
+  rightNav.insertBefore(btn, rightNav.firstChild);
+}
 
 function applyTheme(theme) {
   root.dataset.theme = theme;
@@ -51,6 +63,7 @@ authModal?.addEventListener('click', (event) => { if (event.target === authModal
 function showSection(id) {
   document.querySelectorAll('.nav__item').forEach((item) => item.classList.toggle('is-active', item.dataset.section === id));
   document.querySelectorAll('.section').forEach((section) => section.classList.toggle('is-active', section.id === id));
+  ensureMapDataButton();
 }
 document.querySelectorAll('.nav__item').forEach((button) => button.addEventListener('click', () => showSection(button.dataset.section)));
 
@@ -62,6 +75,7 @@ window.enterVector = function enterVector() {
   workspace?.setAttribute('aria-hidden', 'false');
   localStorage.setItem('vector-user-session', JSON.stringify({ email: 'local' }));
   showSection('map');
+  setTimeout(ensureMapDataButton, 200);
 };
 
 window.logoutVector = function logoutVector() {
@@ -84,4 +98,5 @@ function renderFileList() {
 }
 clearFiles?.addEventListener('click', () => { localStorage.removeItem('vector-reference-files'); renderFileList(); });
 renderFileList();
+ensureMapDataButton();
 try { const session = JSON.parse(localStorage.getItem('vector-user-session') || 'null'); if (session?.email) window.enterVector(); } catch {}
