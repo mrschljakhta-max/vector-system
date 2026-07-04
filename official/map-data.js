@@ -9,6 +9,15 @@
     window.__vectorLeafletPatched = true;
   }
 
+  const LAYER_STYLES = {
+    summary: { color:'#8B5CF6', fillColor:'#8B5CF6' },
+    uav: { color:'#3B82F6', fillColor:'#3B82F6' },
+    stations: { color:'#22C55E', fillColor:'#22C55E' },
+    vp: { color:'#EF4444', fillColor:'#EF4444' },
+    sp: { color:'#FACC15', fillColor:'#FACC15' },
+    settlements: { color:'#94A3B8', fillColor:'#94A3B8' }
+  };
+
   const DATASETS = [
     {
       key:'summary', category:'objects', title:'Зведені НП',
@@ -47,7 +56,7 @@
   function ensureDialog(){
     if(document.querySelector('#mapDataDialog')) return;
     const dialog=document.createElement('section'); dialog.id='mapDataDialog'; dialog.className='map-data-dialog'; dialog.setAttribute('aria-hidden','true');
-    dialog.innerHTML='<div class="map-data-panel"><div class="map-data-head"><div><h2>Дані карти</h2><p>Обери джерела даних для карти. БпЛА тепер беруть координати через прив’язку до населених пунктів.</p></div><button class="map-data-close" type="button" onclick="closeMapDataDialog()">×</button></div><div class="map-data-sections"><section class="map-data-section"><h3>Об’єкти</h3><div class="map-data-grid" id="mapObjectGrid"></div></section><section class="map-data-section"><h3>Параметри</h3><div class="map-data-grid" id="mapParamGrid"></div></section></div><div class="map-data-actions"><button class="map-data-btn" type="button" id="mapDataRefresh">Оновити</button><button class="map-data-btn map-data-btn--primary" type="button" id="mapDataApply">Застосувати</button></div><div class="map-data-status" id="mapDataStatus">Готово до вибору даних.</div></div>';
+    dialog.innerHTML='<div class="map-data-panel"><div class="map-data-head"><div><h2>Дані карти</h2><p>Обери джерела даних для карти. БпЛА — сині, станції — зелені, ВП — червоні, СП — жовті.</p></div><button class="map-data-close" type="button" onclick="closeMapDataDialog()">×</button></div><div class="map-data-sections"><section class="map-data-section"><h3>Об’єкти</h3><div class="map-data-grid" id="mapObjectGrid"></div></section><section class="map-data-section"><h3>Параметри</h3><div class="map-data-grid" id="mapParamGrid"></div></section></div><div class="map-data-actions"><button class="map-data-btn" type="button" id="mapDataRefresh">Оновити</button><button class="map-data-btn map-data-btn--primary" type="button" id="mapDataApply">Застосувати</button></div><div class="map-data-status" id="mapDataStatus">Готово до вибору даних.</div></div>';
     document.body.appendChild(dialog);
     const badges=document.createElement('div'); badges.id='mapLayerBadge'; badges.className='map-layer-badge'; document.body.appendChild(badges);
     dialog.addEventListener('click',e=>{ if(e.target===dialog) closeMapDataDialog(); });
@@ -67,7 +76,7 @@
       renderCards();
     }));
   }
-  function cardHtml(d){ const active=selected.has(d.key); return '<label class="map-data-card '+(active?'is-active':'')+'"><input type="checkbox" value="'+d.key+'" '+(active?'checked':'')+'><span><strong>'+d.title+'</strong><small>'+d.desc+'</small></span><b class="map-data-count">'+(counts[d.key]??'…')+'</b></label>'; }
+  function cardHtml(d){ const active=selected.has(d.key); const swatch=LAYER_STYLES[d.key]?.fillColor || '#D78219'; return '<label class="map-data-card '+(active?'is-active':'')+'"><input type="checkbox" value="'+d.key+'" '+(active?'checked':'')+'><span><strong><i style="display:inline-block;width:10px;height:10px;border-radius:50%;background:'+swatch+';margin-right:8px"></i>'+d.title+'</strong><small>'+d.desc+'</small></span><b class="map-data-count">'+(counts[d.key]??'…')+'</b></label>'; }
 
   async function loadCounts(){
     const c=sb(); if(!c){ status('Supabase-клієнт не підключений.'); return; }
@@ -88,7 +97,7 @@
       (data||[]).filter(r=>!d.filter||d.filter(r)).forEach(r=>{
         const lat=Number(r[d.lat]), lon=Number(r[d.lon]); if(!Number.isFinite(lat)||!Number.isFinite(lon)) return;
         const title=r[d.name]||d.title;
-        const marker = d.aggregate ? makeScaledMarker(lat, lon, r, d.countField) : window.L.circleMarker([lat,lon],{radius:6,weight:2,fillOpacity:.75});
+        const marker = d.aggregate ? makeScaledMarker(lat, lon, r, d.countField, d.key) : makePointMarker(lat, lon, d.key);
         marker.bindPopup(d.popup === 'summary' ? summaryPopup(r) : d.popup === 'uav' ? uavPopup(r) : basicPopup(title, d.title, r)).addTo(layerGroup); added++;
       });
     }
@@ -96,10 +105,15 @@
     closeMapDataDialog(); if(added) try{ map.fitBounds(layerGroup.getBounds(),{padding:[40,40]}); }catch{}
   }
 
-  function makeScaledMarker(lat, lon, r, field){
+  function markerStyle(key){
+    const s = LAYER_STYLES[key] || { color:'#D78219', fillColor:'#D78219' };
+    return { color:s.color, fillColor:s.fillColor, weight:2, fillOpacity:.72, opacity:.95 };
+  }
+  function makePointMarker(lat, lon, key){ return window.L.circleMarker([lat,lon],{...markerStyle(key),radius:7}); }
+  function makeScaledMarker(lat, lon, r, field, key){
     const total = Number(r[field] || r.total_related_count || 0);
     const radius = Math.max(7, Math.min(28, 7 + Math.sqrt(total) * 0.45));
-    return window.L.circleMarker([lat, lon], { radius, weight:2, fillOpacity:.72 });
+    return window.L.circleMarker([lat, lon], { ...markerStyle(key), radius });
   }
   function summaryPopup(r){
     return '<b>'+esc(r.settlement_name)+'</b><br><span>Зведений НП</span><hr>'+
@@ -126,7 +140,7 @@
   }
   function basicPopup(title, sourceTitle, r){ return '<b>'+esc(title)+'</b><br>'+sourceTitle+'<br>'+Object.entries(r).slice(0,8).map(([k,v])=>esc(k)+': '+esc(v??'')).join('<br>'); }
   function formatDate(v){ if(!v) return '—'; try{return new Date(v).toLocaleString('uk-UA');}catch{return v;} }
-  function renderBadges(chosen){ const box=document.querySelector('#mapLayerBadge'); if(!box) return; box.classList.toggle('is-visible',chosen.length>0); box.innerHTML=chosen.map(d=>'<span>'+d.title+'</span>').join(''); }
+  function renderBadges(chosen){ const box=document.querySelector('#mapLayerBadge'); if(!box) return; box.classList.toggle('is-visible',chosen.length>0); box.innerHTML=chosen.map(d=>'<span style="border-color:'+(LAYER_STYLES[d.key]?.fillColor||'#D78219')+'">'+d.title+'</span>').join(''); }
   function status(t){ const el=document.querySelector('#mapDataStatus'); if(el) el.textContent=t; }
   function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
   window.openMapDataDialog=function(){ ensureDialog(); document.querySelector('#mapDataDialog')?.classList.add('is-open'); document.querySelector('#mapDataDialog')?.setAttribute('aria-hidden','false'); };
