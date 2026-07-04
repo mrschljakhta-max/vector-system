@@ -13,16 +13,17 @@
     return null;
   }
 
-  function loadLabelCollision(){
-    if(document.querySelector('script[src^="./map-label-collision.js"]')) return;
+  function loadScriptOnce(src){
+    if(document.querySelector('script[src^="'+src.split('?')[0]+'"]')) return;
     const s=document.createElement('script');
-    s.src='./map-label-collision.js?v=20260704-1';
+    s.src=src;
     s.defer=true;
     document.head.appendChild(s);
   }
 
   function mount() {
-    loadLabelCollision();
+    loadScriptOnce('./map-label-collision.js?v=20260704-1');
+    loadScriptOnce('./map-clusters.js?v=20260704-1');
     const nav = document.querySelector('.hover-nav--right');
     if (!nav || document.querySelector('#networkBtn')) return;
     const b = document.createElement('button');
