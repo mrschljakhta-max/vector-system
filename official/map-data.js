@@ -1,4 +1,14 @@
 (() => {
+  if (window.L && !window.__vectorLeafletPatched) {
+    const originalMap = window.L.map;
+    window.L.map = function patchedMap(...args) {
+      const map = originalMap.apply(this, args);
+      window.vectorLeafletMap = map;
+      return map;
+    };
+    window.__vectorLeafletPatched = true;
+  }
+
   const DATASETS = [
     { key:'uav', category:'objects', title:'БпЛА', desc:'Події БпЛА з NORM бойової роботи', table:'norm_word_events', columns:['event_at','uav_type_id','result_raw','result_normalized','azimuth','is_detected','is_suppressed','is_cover','created_at'], point:false },
     { key:'settlements', category:'objects', title:'Населені пункти', desc:'dict_settlements: lat/lon/MGRS', table:'dict_settlements', columns:['name','region','district','hromada_name','lat','lon','mgrs'], point:true, name:'name', lat:'lat', lon:'lon' },
@@ -12,7 +22,13 @@
   ];
   let client=null, counts={}, layerGroup=null, selected=new Set(['settlements','stations']);
   function sb(){ if(client) return client; if(!window.supabase||!window.VECTOR_SUPABASE_URL||!window.VECTOR_SUPABASE_KEY) return null; client=window.supabase.createClient(window.VECTOR_SUPABASE_URL,window.VECTOR_SUPABASE_KEY); return client; }
-  function getMap(){ if(window.vectorMap) return window.vectorMap; try{ const m=eval('vectorMap'); if(m){ window.vectorMap=m; return m; } }catch{} return null; }
+  function isLeafletMap(m){ return !!(m && typeof m.addLayer === 'function' && typeof m.removeLayer === 'function' && typeof m.fitBounds === 'function'); }
+  function getMap(){
+    if(isLeafletMap(window.vectorLeafletMap)) return window.vectorLeafletMap;
+    if(isLeafletMap(window.vectorMap)) return window.vectorMap;
+    try{ const m=eval('vectorMap'); if(isLeafletMap(m)){ window.vectorLeafletMap=m; return m; } }catch{}
+    return null;
+  }
   function ensureDialog(){
     if(document.querySelector('#mapDataDialog')) return;
     const dialog=document.createElement('section'); dialog.id='mapDataDialog'; dialog.className='map-data-dialog'; dialog.setAttribute('aria-hidden','true');
@@ -39,8 +55,8 @@
   }
   async function applyDataSelection(){
     const c=sb(); if(!c){ status('Supabase-клієнт не підключений.'); return; }
-    const map=getMap(); if(!map){ status('Карта ще не ініціалізована. Перейди на вкладку Карта.'); return; }
-    if(!layerGroup) layerGroup=L.layerGroup().addTo(map); else layerGroup.clearLayers();
+    const map=getMap(); if(!map){ status('Карта ще не ініціалізована. Закрий вікно, відкрий карту і повтори.'); return; }
+    if(!layerGroup) layerGroup=window.L.layerGroup().addTo(map); else layerGroup.clearLayers();
     const chosen=DATASETS.filter(d=>selected.has(d.key)); let added=0;
     status('Завантажую вибрані джерела...');
     for(const d of chosen.filter(x=>x.point)){
@@ -49,7 +65,7 @@
       (data||[]).filter(r=>!d.filter||d.filter(r)).forEach(r=>{
         const lat=Number(r[d.lat]), lon=Number(r[d.lon]); if(!Number.isFinite(lat)||!Number.isFinite(lon)) return;
         const title=r[d.name]||d.title; const popup='<b>'+esc(title)+'</b><br>'+d.title+'<br>'+Object.entries(r).slice(0,8).map(([k,v])=>esc(k)+': '+esc(v??'')).join('<br>');
-        L.circleMarker([lat,lon],{radius:6,weight:2,fillOpacity:.75}).bindPopup(popup).addTo(layerGroup); added++;
+        window.L.circleMarker([lat,lon],{radius:6,weight:2,fillOpacity:.75}).bindPopup(popup).addTo(layerGroup); added++;
       });
     }
     renderBadges(chosen); status('Дані застосовано. Точок на карті: '+added+'. Параметри: '+chosen.filter(x=>!x.point).map(x=>x.title).join(', '));
