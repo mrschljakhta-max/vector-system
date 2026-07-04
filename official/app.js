@@ -28,14 +28,7 @@ function forceNavVisibility() {
     document.head.appendChild(style);
   }
   document.querySelectorAll('#workspace > .hover-nav').forEach((nav) => {
-    nav.style.display = 'flex';
-    nav.style.visibility = 'visible';
-    nav.style.opacity = '1';
-    nav.style.position = 'fixed';
-    nav.style.top = '0';
-    nav.style.bottom = '0';
-    nav.style.zIndex = '9000';
-    nav.style.pointerEvents = 'auto';
+    nav.style.display = 'flex'; nav.style.visibility = 'visible'; nav.style.opacity = '1'; nav.style.position = 'fixed'; nav.style.top = '0'; nav.style.bottom = '0'; nav.style.zIndex = '9000'; nav.style.pointerEvents = 'auto';
   });
 }
 
@@ -52,6 +45,8 @@ function loadLibraryAssets() {
   injectAsset('script', { src: './supabase-library.js?v=20260704-1', defer: true });
   injectAsset('link', { rel: 'stylesheet', href: './map-data.css?v=20260704-7' });
   injectAsset('script', { src: './map-data.js?v=20260704-7', defer: true });
+  injectAsset('link', { rel: 'stylesheet', href: './dict-editor.css?v=20260704-1' });
+  injectAsset('script', { src: './dict-editor.js?v=20260704-1', defer: true });
 }
 loadLibraryAssets();
 forceNavVisibility();
@@ -60,77 +55,30 @@ function ensureMapDataButton() {
   const rightNav = document.querySelector('.hover-nav--right');
   if (!rightNav || document.querySelector('#openMapDataButton')) return;
   const btn = document.createElement('button');
-  btn.className = 'hover-nav__item';
-  btn.id = 'openMapDataButton';
-  btn.type = 'button';
+  btn.className = 'hover-nav__item'; btn.id = 'openMapDataButton'; btn.type = 'button';
   btn.innerHTML = '<img src="../assets/database-import.svg" alt=""><span>Дані</span>';
   btn.addEventListener('click', () => window.openMapDataDialog?.());
   rightNav.insertBefore(btn, rightNav.firstChild);
   forceNavVisibility();
 }
 
-function applyTheme(theme) {
-  root.dataset.theme = theme;
-  localStorage.setItem('vector-theme', theme);
-  if (themeLabel) themeLabel.textContent = theme === 'dark' ? 'Темна' : 'Світла';
-}
+function applyTheme(theme) { root.dataset.theme = theme; localStorage.setItem('vector-theme', theme); if (themeLabel) themeLabel.textContent = theme === 'dark' ? 'Темна' : 'Світла'; }
 applyTheme(localStorage.getItem('vector-theme') || 'dark');
 themeToggle?.addEventListener('click', () => applyTheme(root.dataset.theme === 'dark' ? 'light' : 'dark'));
-
-function setAuthMode(mode) {
-  document.querySelectorAll('.auth-tab[data-auth-mode]').forEach((tab) => tab.classList.toggle('is-active', tab.dataset.authMode === mode));
-  loginForm?.classList.toggle('is-active', mode === 'login');
-  registerForm?.classList.toggle('is-active', mode === 'register');
-}
+function setAuthMode(mode) { document.querySelectorAll('.auth-tab[data-auth-mode]').forEach((tab) => tab.classList.toggle('is-active', tab.dataset.authMode === mode)); loginForm?.classList.toggle('is-active', mode === 'login'); registerForm?.classList.toggle('is-active', mode === 'register'); }
 function openAuth(mode = 'login') { setAuthMode(mode); authModal?.classList.add('is-open'); authModal?.setAttribute('aria-hidden', 'false'); }
 function closeAuth() { authModal?.classList.remove('is-open'); authModal?.setAttribute('aria-hidden', 'true'); }
 openLogin?.addEventListener('click', () => openAuth('login'));
 closeModal?.addEventListener('click', closeAuth);
 document.querySelectorAll('[data-auth-mode]').forEach((button) => button.addEventListener('click', () => setAuthMode(button.dataset.authMode)));
-
 authModal?.addEventListener('click', (event) => { if (event.target === authModal) closeAuth(); });
-
-function showSection(id) {
-  document.querySelectorAll('.nav__item').forEach((item) => item.classList.toggle('is-active', item.dataset.section === id));
-  document.querySelectorAll('.section').forEach((section) => section.classList.toggle('is-active', section.id === id));
-  ensureMapDataButton();
-  forceNavVisibility();
-}
+function showSection(id) { document.querySelectorAll('.nav__item').forEach((item) => item.classList.toggle('is-active', item.dataset.section === id)); document.querySelectorAll('.section').forEach((section) => section.classList.toggle('is-active', section.id === id)); ensureMapDataButton(); forceNavVisibility(); }
 document.querySelectorAll('.nav__item').forEach((button) => button.addEventListener('click', () => showSection(button.dataset.section)));
-
-window.enterVector = function enterVector() {
-  closeAuth();
-  landingScreen?.setAttribute('hidden', 'true');
-  document.querySelector('.landing-bg')?.setAttribute('hidden', 'true');
-  workspace?.classList.add('is-open');
-  workspace?.setAttribute('aria-hidden', 'false');
-  localStorage.setItem('vector-user-session', JSON.stringify({ email: 'local' }));
-  showSection('map');
-  forceNavVisibility();
-  setTimeout(() => { ensureMapDataButton(); forceNavVisibility(); }, 200);
-};
-
-window.logoutVector = function logoutVector() {
-  workspace?.classList.remove('is-open');
-  workspace?.setAttribute('aria-hidden', 'true');
-  landingScreen?.removeAttribute('hidden');
-  document.querySelector('.landing-bg')?.removeAttribute('hidden');
-  localStorage.removeItem('vector-user-session');
-};
-
+window.enterVector = function enterVector() { closeAuth(); landingScreen?.setAttribute('hidden', 'true'); document.querySelector('.landing-bg')?.setAttribute('hidden', 'true'); workspace?.classList.add('is-open'); workspace?.setAttribute('aria-hidden', 'false'); localStorage.setItem('vector-user-session', JSON.stringify({ email: 'local' })); showSection('map'); forceNavVisibility(); setTimeout(() => { ensureMapDataButton(); forceNavVisibility(); }, 200); };
+window.logoutVector = function logoutVector() { workspace?.classList.remove('is-open'); workspace?.setAttribute('aria-hidden', 'true'); landingScreen?.removeAttribute('hidden'); document.querySelector('.landing-bg')?.removeAttribute('hidden'); localStorage.removeItem('vector-user-session'); };
 loginForm?.addEventListener('submit', (event) => { event.preventDefault(); window.enterVector(); });
 registerForm?.addEventListener('submit', (event) => { event.preventDefault(); alert('Заявку зафіксовано локально.'); });
-
-function renderFileList() {
-  if (!fileList) return;
-  let files = [];
-  try { files = JSON.parse(localStorage.getItem('vector-reference-files') || '[]'); } catch {}
-  if (!files.length) { fileList.textContent = 'Файли ще не додані.'; return; }
-  fileList.innerHTML = files.map((file) => `<div class="file-entry"><strong>${String(file.name || '')}</strong><span>${String(file.type || '')}</span><span>${file.importedTableId ? 'імпортована таблиця' : ''}</span></div>`).join('');
-}
+function renderFileList() { if (!fileList) return; let files = []; try { files = JSON.parse(localStorage.getItem('vector-reference-files') || '[]'); } catch {} if (!files.length) { fileList.textContent = 'Файли ще не додані.'; return; } fileList.innerHTML = files.map((file) => `<div class="file-entry"><strong>${String(file.name || '')}</strong><span>${String(file.type || '')}</span><span>${file.importedTableId ? 'імпортована таблиця' : ''}</span></div>`).join(''); }
 clearFiles?.addEventListener('click', () => { localStorage.removeItem('vector-reference-files'); renderFileList(); });
-renderFileList();
-ensureMapDataButton();
-forceNavVisibility();
-setInterval(forceNavVisibility, 1200);
+renderFileList(); ensureMapDataButton(); forceNavVisibility(); setInterval(forceNavVisibility, 1200);
 try { const session = JSON.parse(localStorage.getItem('vector-user-session') || 'null'); if (session?.email) window.enterVector(); } catch {}
