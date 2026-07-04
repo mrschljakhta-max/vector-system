@@ -23,6 +23,7 @@
   let activeGroup = 'NORM';
   let activeSource = SOURCES[0];
   let activeRows = [];
+  let countsCache = {};
 
   function getClient(){
     if(client) return client;
@@ -50,23 +51,28 @@
     box.querySelectorAll('.dict-tab').forEach(btn=>btn.addEventListener('click',()=>{ activeGroup=btn.dataset.group; activeSource=SOURCES.find(s=>s.group===activeGroup); renderTabs(); renderCards(); openSource(activeSource.table); }));
   }
 
-  function renderCards(counts={}){
+  function renderCards(counts=countsCache){
     const grid = document.querySelector('#dictGrid'); if(!grid) return;
     const items = SOURCES.filter(s=>s.group===activeGroup);
-    grid.innerHTML = items.map(src=>'<button class="dict-card '+(src.table===activeSource.table?'is-active':'')+'" data-table="'+src.table+'" type="button"><strong>'+src.title+'</strong><span>'+src.desc+'</span><b>'+(counts[src.table] ?? '—')+'</b></button>').join('');
+    grid.innerHTML = items.map(src=>'<button class="dict-card '+(src.table===activeSource.table?'is-active':'')+'" data-table="'+src.table+'" type="button"><strong>'+src.title+'</strong><span>'+src.desc+'</span><b>'+(counts[src.table] ?? '…')+'</b></button>').join('');
     grid.querySelectorAll('.dict-card').forEach(btn=>btn.addEventListener('click',()=>openSource(btn.dataset.table)));
   }
 
   async function loadCounts(){
     const sb=getClient(); if(!sb){showError('Supabase-клієнт не підключений.'); return;}
-    const counts={};
-    await Promise.all(SOURCES.map(async src=>{ const {count,error}=await sb.from(src.table).select('*',{count:'exact',head:true}); counts[src.table]=error?'!':(count??0); }));
+    const counts={...countsCache};
     renderCards(counts);
+    await Promise.all(SOURCES.map(async src=>{
+      const {count,error}=await sb.from(src.table).select('*',{count:'exact',head:true});
+      counts[src.table]=error?'!':(count??0);
+    }));
+    countsCache=counts;
+    renderCards(countsCache);
   }
 
   async function openSource(table){
     const src = SOURCES.find(s=>s.table===table) || SOURCES[0];
-    activeSource=src; activeGroup=src.group; renderTabs();
+    activeSource=src; activeGroup=src.group; renderTabs(); renderCards(countsCache);
     document.querySelectorAll('.dict-card').forEach(c=>c.classList.toggle('is-active',c.dataset.table===table));
     const viewer=document.querySelector('#dictViewer'); if(viewer) viewer.innerHTML='<div class="dict-empty">Завантаження записів...</div>';
     const sb=getClient(); if(!sb){showError('Supabase-клієнт не підключений.'); return;}
@@ -76,7 +82,9 @@
     else if(src.columns.includes('created_at')) query=query.order('created_at',{ascending:false});
     const {data,error}=await query;
     if(error){showError('Помилка завантаження: '+error.message); return;}
-    activeRows=data||[]; renderViewer('');
+    activeRows=data||[];
+    if(countsCache[src.table] === undefined || countsCache[src.table] === '…') { countsCache[src.table] = activeRows.length; renderCards(countsCache); }
+    renderViewer('');
   }
 
   function renderViewer(filter){
