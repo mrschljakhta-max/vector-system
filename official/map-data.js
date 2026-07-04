@@ -12,6 +12,7 @@
   ];
   let client=null, counts={}, layerGroup=null, selected=new Set(['settlements','stations']);
   function sb(){ if(client) return client; if(!window.supabase||!window.VECTOR_SUPABASE_URL||!window.VECTOR_SUPABASE_KEY) return null; client=window.supabase.createClient(window.VECTOR_SUPABASE_URL,window.VECTOR_SUPABASE_KEY); return client; }
+  function getMap(){ if(window.vectorMap) return window.vectorMap; try{ const m=eval('vectorMap'); if(m){ window.vectorMap=m; return m; } }catch{} return null; }
   function ensureDialog(){
     if(document.querySelector('#mapDataDialog')) return;
     const dialog=document.createElement('section'); dialog.id='mapDataDialog'; dialog.className='map-data-dialog'; dialog.setAttribute('aria-hidden','true');
@@ -38,8 +39,8 @@
   }
   async function applyDataSelection(){
     const c=sb(); if(!c){ status('Supabase-клієнт не підключений.'); return; }
-    if(!window.vectorMap){ status('Карта ще не ініціалізована. Перейди на вкладку Карта.'); return; }
-    if(!layerGroup) layerGroup=L.layerGroup().addTo(window.vectorMap); else layerGroup.clearLayers();
+    const map=getMap(); if(!map){ status('Карта ще не ініціалізована. Перейди на вкладку Карта.'); return; }
+    if(!layerGroup) layerGroup=L.layerGroup().addTo(map); else layerGroup.clearLayers();
     const chosen=DATASETS.filter(d=>selected.has(d.key)); let added=0;
     status('Завантажую вибрані джерела...');
     for(const d of chosen.filter(x=>x.point)){
@@ -52,7 +53,7 @@
       });
     }
     renderBadges(chosen); status('Дані застосовано. Точок на карті: '+added+'. Параметри: '+chosen.filter(x=>!x.point).map(x=>x.title).join(', '));
-    closeMapDataDialog(); if(added) try{ window.vectorMap.fitBounds(layerGroup.getBounds(),{padding:[40,40]}); }catch{}
+    closeMapDataDialog(); if(added) try{ map.fitBounds(layerGroup.getBounds(),{padding:[40,40]}); }catch{}
   }
   function renderBadges(chosen){ const box=document.querySelector('#mapLayerBadge'); if(!box) return; box.classList.toggle('is-visible',chosen.length>0); box.innerHTML=chosen.map(d=>'<span>'+d.title+'</span>').join(''); }
   function status(t){ const el=document.querySelector('#mapDataStatus'); if(el) el.textContent=t; }
