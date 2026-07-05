@@ -9,7 +9,7 @@
   function saveVisible(){localStorage.setItem(STORAGE,JSON.stringify(visible))}
   function isOn(k){return visible[k]!==false}
   function ensureKey(k){if(!registry[k])registry[k]=new Set()}
-  function loadScript(src){if(document.querySelector('script[src^="'+src+'"]'))return;const s=document.createElement('script');s.src=src+'?v=20260705-2';s.defer=true;document.head.appendChild(s)}
+  function loadScript(src){if(document.querySelector('script[src^="'+src+'"]'))return;const s=document.createElement('script');s.src=src+'?v=20260705-3';s.defer=true;document.head.appendChild(s)}
   function loadGrid(){loadScript('./map-grid.js')}
   function loadHeat(){loadScript('./hm.js')}
   function classify(layer){if(layer?.options?.vectorLayerKey)return layer.options.vectorLayerKey;const o=layer?.options||{};const color=String(o.color||o.fillColor||'').toUpperCase();const radius=typeof layer.getRadius==='function'?Number(layer.getRadius()):0;if(color==='#8B5CF6')return'summary';if(color==='#3B82F6')return'uav';if(color==='#22C55E')return radius>1000?'stationRadius':'stations';if(color==='#EF4444')return'vp';if(color==='#FACC15')return'sp';if(color==='#F97316')return'routes';if(color==='#EC4899')return'points';if(color==='#94A3B8')return'settlements';return'other'}
