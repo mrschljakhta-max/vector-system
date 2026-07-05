@@ -1,5 +1,5 @@
 (() => {
-  const VERSION = 'export-fix-20260705-12-merged-heat-polygons';
+  const VERSION = 'export-fix-20260705-13-scale-heat-style';
   const KEYS = ['summary','uav','stations','stationRadius','vp','sp','routes','points','polygons','settlements','heatmap'];
   const NAMES = {
     summary:'Зведені НП', uav:'БПЛА', stations:'Станції', stationRadius:'Радіуси станцій',
@@ -11,19 +11,16 @@
     vp:'#EF4444', sp:'#FACC15', routes:'#F97316', points:'#EC4899',
     polygons:'#16A34A', settlements:'#94A3B8', heatmap:'#ff8a00'
   };
-  const HEAT_PALETTE = [
-    [55, 0, 110, 0.00],
-    [130, 60, 210, 0.22],
-    [255, 210, 90, 0.48],
-    [255, 120, 20, 0.68],
-    [255, 10, 0, 0.82]
-  ];
+  const PALETTES = {
+    magma: [[5,0,10,0],[72,20,107,.15],[180,54,122,.30],[255,112,64,.46],[255,230,120,.58]],
+    mono: [[0,0,0,0],[45,45,45,.12],[140,140,140,.26],[255,255,255,.46]],
+    uv: [[0,255,240,0],[0,255,240,.14],[30,80,255,.28],[180,0,255,.44],[255,255,255,.56]]
+  };
 
   const exportLayers = Object.fromEntries(KEYS.map(k => [k, true]));
   let previewMap = null;
   let previewHeatCanvas = null;
   let lastPreviewState = null;
-  let renderTimer = null;
 
   function mainMap(){ return window.vectorLeafletMap || window.vectorMap || safeEvalMap(); }
   function safeEvalMap(){ try { const m = eval('vectorMap'); if (m && m.addLayer) return m; } catch {} return null; }
@@ -59,7 +56,7 @@
       .expLegend b{display:block;margin-bottom:8px}.expLegend div{display:flex;align-items:center;gap:8px;margin:6px 0}.expDot{width:12px;height:12px;border-radius:50%;display:inline-block}
       .expNorth{position:absolute;right:20px;top:20px;width:48px;height:66px;background:rgba(8,18,32,.76);border-radius:14px;display:flex;align-items:center;justify-content:center;color:#fff;font:900 15px Rajdhani,Arial}
       .expNorth:before{content:'▲';position:absolute;top:8px;font-size:20px}.expNorth span{margin-top:22px}
-      .expScale{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);padding:10px 20px;background:rgba(8,18,32,.78);border-radius:14px;color:#fff;font:900 22px Rajdhani,Arial}
+      .expScale{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);padding:10px 20px;background:rgba(8,18,32,.78);border-radius:14px;color:#fff;font:900 22px Rajdhani,Arial;min-width:70px;text-align:center}
       .expKpi{position:absolute;left:22px;bottom:20px;padding:12px 16px;background:rgba(8,18,32,.74);border-radius:14px;color:#fff;min-width:180px}
       .expInfo{position:absolute;right:22px;bottom:20px;padding:12px 16px;background:rgba(8,18,32,.74);border-radius:14px;color:#fff}
       .expGrid{position:absolute;inset:0;z-index:8500;pointer-events:none;background-image:linear-gradient(rgba(51,65,85,.45) 1px,transparent 1px),linear-gradient(90deg,rgba(51,65,85,.45) 1px,transparent 1px);background-size:120px 120px}
@@ -129,7 +126,6 @@
     m.querySelector('#expPng').onclick = exportPng;
     m.querySelector('#expXls').onclick = exportXlsx;
     m.querySelector('#expPdf').onclick = () => status('PDF додамо наступним етапом.');
-
     m.querySelectorAll('#expName,#expAuthor').forEach(i => i.addEventListener('input', renderDecorations));
     m.querySelectorAll('.exportChecks input:not(.expLayer)').forEach(i => i.addEventListener('change', renderDecorations));
     return m;
@@ -157,7 +153,6 @@
     const out = new Set();
     const r = registry();
     if (r[k]) r[k].forEach(l => out.add(l));
-
     const m = mainMap();
     if (m) {
       m.eachLayer(l => {
@@ -169,7 +164,6 @@
         addRec(l);
       });
     }
-
     if (k === 'polygons' && window.vectorCoverageGroup?.eachLayer) {
       window.vectorCoverageGroup.eachLayer(l => out.add(l));
     }
@@ -203,10 +197,32 @@
     }
   }
 
+  function formatScale(n){
+    if (!Number.isFinite(n) || n <= 0) return '1:—';
+    const rounded = Math.max(10000, Math.round(n / 10000) * 10000);
+    return '1:' + rounded.toLocaleString('uk-UA').replace(/\u00a0/g,' ');
+  }
+
+  function computedScale(){
+    const m = previewMap || mainMap();
+    const container = byId('#exportPreview') || m?.getContainer?.();
+    if (!m || !container) return '1:—';
+    const center = m.getCenter();
+    const zoom = m.getZoom();
+    const lat = center?.lat || 0;
+    const metersPerPixel = 156543.03392 * Math.cos(lat * Math.PI / 180) / Math.pow(2, zoom);
+    const cssWidth = Math.max(1, container.clientWidth || 1000);
+    const nominalPx = Math.min(240, Math.max(100, cssWidth * 0.18));
+    return formatScale(metersPerPixel * nominalPx / 0.025);
+  }
+
   function currentScale(){
     const e = document.querySelector('#vectorScaleBox,#scaleBox,.scale-box');
-    return e?.textContent?.replace('МАСШТАБ','').trim() || '1:—';
+    const txt = e?.textContent?.replace('МАСШТАБ','').trim();
+    if (txt && !txt.includes('—')) return txt;
+    return computedScale();
   }
+
   function tileUrl(){
     let url = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
     try { mainMap()?.eachLayer(l => { if (l._url) url = l._url; }); } catch {}
@@ -253,13 +269,28 @@
     return out;
   }
 
+  function getHeatSettings(){
+    const palEl = document.querySelector('.hmStyle.active');
+    const palette = palEl?.dataset?.pal || 'magma';
+    const intensity = (Number(byId('#hmIntensity')?.value || 65) / 100) * 0.72;
+    const radius = Number(byId('#hmRadius')?.value || 42);
+    const cold = Number(byId('#hmCold')?.value || 45) / 100;
+    return { palette, intensity, radius, cold };
+  }
+
   function interp(a,b,t){ return a + (b-a)*t; }
-  function heatColor(t){
+  function heatColor(t, palette, intensity){
+    const p = PALETTES[palette] || PALETTES.magma;
     t = Math.max(0, Math.min(1, t));
-    const x = t * (HEAT_PALETTE.length - 1);
-    const i = Math.min(HEAT_PALETTE.length - 2, Math.floor(x));
-    const f = x - i, a = HEAT_PALETTE[i], b = HEAT_PALETTE[i+1];
-    return [interp(a[0],b[0],f), interp(a[1],b[1],f), interp(a[2],b[2],f), interp(a[3],b[3],f)];
+    const x = t * (p.length - 1);
+    const i = Math.min(p.length - 2, Math.floor(x));
+    const f = x - i, a = p[i], b = p[i+1];
+    return [
+      interp(a[0],b[0],f),
+      interp(a[1],b[1],f),
+      interp(a[2],b[2],f),
+      interp(a[3],b[3],f) * intensity
+    ];
   }
 
   function drawPreviewHeatmap(){
@@ -267,21 +298,22 @@
     const container = byId('#exportLeaflet'); if (!container) return;
     if (previewHeatCanvas) previewHeatCanvas.remove();
 
+    const { palette, intensity, radius, cold } = getHeatSettings();
     const w = container.clientWidth, h = container.clientHeight;
     const mask = document.createElement('canvas');
     mask.width = w; mask.height = h;
     const mx = mask.getContext('2d');
-    const radius = 58;
+    const rr = Math.max(18, Math.min(100, radius));
 
     activePointLatLngs().forEach(p => {
       const q = previewMap.latLngToContainerPoint(p);
-      const g = mx.createRadialGradient(q.x, q.y, 0, q.x, q.y, radius);
-      g.addColorStop(0, 'rgba(255,255,255,.56)');
-      g.addColorStop(.58, 'rgba(255,255,255,.24)');
+      const g = mx.createRadialGradient(q.x, q.y, 0, q.x, q.y, rr);
+      g.addColorStop(0, 'rgba(255,255,255,.46)');
+      g.addColorStop(.60, 'rgba(255,255,255,.20)');
       g.addColorStop(1, 'rgba(255,255,255,0)');
       mx.fillStyle = g;
       mx.beginPath();
-      mx.arc(q.x, q.y, radius, 0, Math.PI*2);
+      mx.arc(q.x, q.y, rr, 0, Math.PI*2);
       mx.fill();
     });
 
@@ -289,15 +321,14 @@
     const d = img.data;
     const out = mx.createImageData(w,h);
     const o = out.data;
-    const coldFill = 0.45;
-    const minA = 0.025 * (1 - coldFill);
-    const boost = 1 + coldFill * 2.15;
+    const minA = 0.035 * (1 - cold);
+    const boost = 1 + cold * 1.65;
 
     for (let i=0;i<d.length;i+=4){
       const a = d[i+3] / 255;
       if (a < minA) { o[i+3] = 0; continue; }
       const t = Math.min(1, Math.max(0, (a - minA) / (1 - minA)) * boost);
-      const c = heatColor(t);
+      const c = heatColor(t, palette, intensity);
       o[i] = c[0]; o[i+1] = c[1]; o[i+2] = c[2]; o[i+3] = Math.round(c[3]*255);
     }
 
@@ -335,8 +366,10 @@
         previewMap.on('moveend zoomend', () => {
           lastPreviewState = { center: previewMap.getCenter(), zoom: previewMap.getZoom() };
           drawPreviewHeatmap();
+          renderDecorations();
         });
         drawPreviewHeatmap();
+        renderDecorations();
       } catch {}
     }, 120);
   }
@@ -366,10 +399,6 @@
     show('#expGridBox', checked('#expGridOn'));
   }
 
-  function scheduleRender(reset=false){
-    clearTimeout(renderTimer);
-    renderTimer = setTimeout(() => renderAll(reset), 80);
-  }
   function renderAll(resetView=false){
     renderMapPreview(resetView);
     renderDecorations();
@@ -392,6 +421,7 @@
         lastPreviewState = { center: previewMap.getCenter(), zoom: previewMap.getZoom() };
         previewMap.invalidateSize();
         drawPreviewHeatmap();
+        renderDecorations();
       }
       await new Promise(r => setTimeout(r, 500));
       await loadHtml2Canvas();
