@@ -1,0 +1,175 @@
+/* VECTOR map tools layout override
+   This file is intentionally loaded separately and uses high-specificity
+   selectors with !important because several map tools inject inline <style>
+   blocks after page load. */
+
+:root {
+  --vector-tool-right: 92px;
+  --vector-panel-right: 154px;
+  --vector-tool-top: 140px;
+  --vector-tool-step: 66px;
+}
+
+/* Right-side tool buttons: strict top-to-bottom stack */
+.map-layer-nav {
+  justify-content: flex-start !important;
+  padding-top: var(--vector-tool-top) !important;
+  gap: 12px !important;
+}
+
+#openLayerControl.vector-map-tool-btn {
+  top: var(--vector-tool-top) !important;
+  right: var(--vector-tool-right) !important;
+}
+
+#openPolygonControl.vector-polygon-tool-btn {
+  top: calc(var(--vector-tool-top) + var(--vector-tool-step)) !important;
+  right: var(--vector-tool-right) !important;
+}
+
+#gridBtn.gridBtn {
+  top: calc(var(--vector-tool-top) + var(--vector-tool-step) * 2) !important;
+  right: var(--vector-tool-right) !important;
+}
+
+#hm.hm {
+  top: calc(var(--vector-tool-top) + var(--vector-tool-step) * 3) !important;
+  right: var(--vector-tool-right) !important;
+}
+
+#exportBtn.exportBtn {
+  top: calc(var(--vector-tool-top) + var(--vector-tool-step) * 4) !important;
+  right: var(--vector-tool-right) !important;
+}
+
+#clusterBtn.clusterBtn {
+  top: calc(var(--vector-tool-top) + var(--vector-tool-step) * 5) !important;
+  right: var(--vector-tool-right) !important;
+}
+
+/* Panels aligned with the new button stack */
+#vectorLayerPanel {
+  top: calc(var(--vector-tool-top) - 8px) !important;
+  right: var(--vector-panel-right) !important;
+}
+
+#vectorPolygonPanel {
+  top: calc(var(--vector-tool-top) + var(--vector-tool-step) - 8px) !important;
+  right: var(--vector-panel-right) !important;
+}
+
+/* Compact heatmap dialog */
+#hmPanel.hmPanel {
+  top: calc(var(--vector-tool-top) + var(--vector-tool-step) * 3 - 8px) !important;
+  right: var(--vector-panel-right) !important;
+  width: min(300px, calc(100vw - 190px)) !important;
+  max-height: min(460px, calc(100vh - 120px)) !important;
+  overflow: auto !important;
+  padding: 14px !important;
+  border-radius: 14px !important;
+}
+
+#hmPanel.hmPanel .hmHead {
+  align-items: flex-start !important;
+  gap: 10px !important;
+  margin-bottom: 10px !important;
+}
+
+#hmPanel.hmPanel .hmHead b {
+  font-size: 18px !important;
+  line-height: 1.05 !important;
+  letter-spacing: .12em !important;
+}
+
+#hmPanel.hmPanel .hmHead button {
+  font-size: 22px !important;
+  line-height: 1 !important;
+}
+
+#hmPanel.hmPanel .hmHelp {
+  font-size: 12px !important;
+  line-height: 1.35 !important;
+  margin: -2px 0 10px !important;
+}
+
+#hmPanel.hmPanel .hmBlock {
+  margin: 10px 0 !important;
+}
+
+#hmPanel.hmPanel .hmLbl {
+  align-items: center !important;
+  gap: 8px !important;
+  font-size: 11px !important;
+  letter-spacing: .09em !important;
+  margin-bottom: 6px !important;
+}
+
+#hmPanel.hmPanel .hmStyles {
+  gap: 6px !important;
+}
+
+#hmPanel.hmPanel .hmStyle {
+  grid-template-columns: 1fr 92px !important;
+  gap: 8px !important;
+  padding: 8px 10px !important;
+  align-items: center !important;
+}
+
+#hmPanel.hmPanel .hmStyle strong {
+  font-size: 12px !important;
+  line-height: 1.15 !important;
+}
+
+#hmPanel.hmPanel .hmGrad {
+  height: 14px !important;
+}
+
+#hmPanel.hmPanel .hmActions {
+  gap: 8px !important;
+  margin-top: 10px !important;
+}
+
+#hmPanel.hmPanel .hmActions button {
+  padding: 8px 10px !important;
+  font-size: 12px !important;
+  letter-spacing: .11em !important;
+}
+
+@media (max-width: 1500px) {
+  :root {
+    --vector-tool-top: 112px;
+    --vector-tool-step: 62px;
+  }
+
+  #hmPanel.hmPanel {
+    width: min(280px, calc(100vw - 184px)) !important;
+    max-height: min(420px, calc(100vh - 110px)) !important;
+    padding: 12px !important;
+  }
+
+  #hmPanel.hmPanel .hmHead b {
+    font-size: 17px !important;
+  }
+
+  #hmPanel.hmPanel .hmHelp {
+    font-size: 11px !important;
+  }
+
+  #hmPanel.hmPanel .hmStyle {
+    grid-template-columns: 1fr 84px !important;
+  }
+}
+
+@media (max-width: 760px) {
+  :root {
+    --vector-tool-right: 76px;
+    --vector-panel-right: 136px;
+    --vector-tool-top: 98px;
+    --vector-tool-step: 60px;
+  }
+
+  #hmPanel.hmPanel {
+    width: min(270px, calc(100vw - 152px)) !important;
+    max-height: min(410px, calc(100vh - 100px)) !important;
+  }
+}
