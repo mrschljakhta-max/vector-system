@@ -9,9 +9,10 @@
   function saveVisible(){localStorage.setItem(STORAGE,JSON.stringify(visible))}
   function isOn(k){return visible[k]!==false}
   function ensureKey(k){if(!registry[k])registry[k]=new Set()}
-  function loadScript(src){if(document.querySelector('script[src^="'+src+'"]'))return;const s=document.createElement('script');s.src=src+'?v=20260705-3';s.defer=true;document.head.appendChild(s)}
+  function loadScript(src){if(document.querySelector('script[src^="'+src+'"]'))return;const s=document.createElement('script');s.src=src+'?v=20260705-5';s.defer=true;document.head.appendChild(s)}
   function loadGrid(){loadScript('./map-grid.js')}
   function loadHeat(){loadScript('./hm.js')}
+  function loadExport(){loadScript('./map-export.js')}
   function classify(layer){if(layer?.options?.vectorLayerKey)return layer.options.vectorLayerKey;const o=layer?.options||{};const color=String(o.color||o.fillColor||'').toUpperCase();const radius=typeof layer.getRadius==='function'?Number(layer.getRadius()):0;if(color==='#8B5CF6')return'summary';if(color==='#3B82F6')return'uav';if(color==='#22C55E')return radius>1000?'stationRadius':'stations';if(color==='#EF4444')return'vp';if(color==='#FACC15')return'sp';if(color==='#F97316')return'routes';if(color==='#EC4899')return'points';if(color==='#94A3B8')return'settlements';return'other'}
   function patchLeaflet(){if(!window.L||window.L.__vectorLayerControlPatched)return;const proto=window.L.LayerGroup&&window.L.LayerGroup.prototype;if(!proto||!proto.addLayer)return;const original=proto.addLayer;proto.addLayer=function(layer){const result=original.call(this,layer);try{const key=classify(layer);ensureKey(key);registry[key].add(layer);layer.__vectorLayerKey=key;applyLayerState(key,layer);renderPanel()}catch{}return result};window.L.__vectorLayerControlPatched=true}
   function applyLayerState(key,layer){const on=isOn(key);if(layer?.setStyle){if(!layer.__vectorOriginalStyle){const o=layer.options||{};layer.__vectorOriginalStyle={opacity:o.opacity??1,fillOpacity:o.fillOpacity??0.7,weight:o.weight??2}}layer.setStyle(on?layer.__vectorOriginalStyle:{opacity:0,fillOpacity:0,weight:0})}const el=layer?.getElement?.();if(el){el.style.pointerEvents=on?'':'none';if(layer?.options?.vectorLabelLayer)el.style.display=on?'':'none'}}
@@ -25,6 +26,6 @@
   `;if(!document.querySelector('#vectorLayerControlStyles'))document.head.appendChild(style);panel.querySelector('#vlpClose').onclick=()=>{panel.classList.remove('is-open');document.querySelector('#openLayerControl')?.classList.remove('is-active')};return panel}
   function togglePanel(){const panel=ensurePanel();renderPanel();panel.classList.toggle('is-open');document.querySelector('#openLayerControl')?.classList.toggle('is-active',panel.classList.contains('is-open'))}
   function renderPanel(){const panel=document.querySelector('#vectorLayerPanel');if(!panel)return;const list=panel.querySelector('#vlpList');const keys=ORDER.filter(k=>registry[k]?.size);if(!keys.length){list.innerHTML='<div class="vlp-empty">Спочатку увімкни дані на карті. Тут зʼявляться активні шари.</div>';return}list.innerHTML=keys.map(k=>'<label class="vlp-row"><input type="checkbox" data-layer="'+k+'" '+(isOn(k)?'checked':'')+'><span class="vlp-title"><i class="vlp-dot" style="background:'+COLORS[k]+'"></i>'+LABELS[k]+'</span><span class="vlp-count">'+registry[k].size+'</span></label>').join('');list.querySelectorAll('input[data-layer]').forEach(input=>input.onchange=()=>{visible[input.dataset.layer]=input.checked;saveVisible();applyGroup(input.dataset.layer)})}
-  function boot(){loadGrid();loadHeat();patchLeaflet();mountButton();ensurePanel();renderPanel()}
+  function boot(){loadGrid();loadHeat();loadExport();patchLeaflet();mountButton();ensurePanel();renderPanel()}
   window.addEventListener('load',()=>{boot();setInterval(boot,1000)});document.addEventListener('click',()=>setTimeout(boot,120));
 })();
