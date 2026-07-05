@@ -9,7 +9,7 @@
 
   function sb(){ if(client) return client; if(!window.supabase||!window.VECTOR_SUPABASE_URL||!window.VECTOR_SUPABASE_KEY) return null; client=window.supabase.createClient(window.VECTOR_SUPABASE_URL,window.VECTOR_SUPABASE_KEY); return client; }
   function isMap(m){ return !!(m && typeof m.addLayer==='function' && typeof m.fitBounds==='function'); }
-  function getMap(){ if(isMap(window.vectorLeafletMap)) return window.vectorLeafletMap; if(isMap(window.vectorMap)) return window.vectorMap; try{const m=eval('vectorMap'); if(isMap(m)){window.vectorLeafletMap=m; return m;}}catch{} return null; }
+  function getMap(){ const m=window.getVectorMap?.() || window.vectorLeafletMap || window.vectorMap || null; return isMap(m) ? m : null; }
   function kmRadius(s){return Number(s.coverage_radius_km||RADIUS_KM)}
   function haversineKm(a,b){const R=6371,dLat=(Number(b.lat)-Number(a.lat))*Math.PI/180,dLon=(Number(b.lon)-Number(a.lon))*Math.PI/180,la1=Number(a.lat)*Math.PI/180,la2=Number(b.lat)*Math.PI/180;const h=Math.sin(dLat/2)**2+Math.cos(la1)*Math.cos(la2)*Math.sin(dLon/2)**2;return 2*R*Math.asin(Math.sqrt(h));}
   function buildComponents(items){const n=items.length,parent=Array.from({length:n},(_,i)=>i);const find=i=>parent[i]===i?i:(parent[i]=find(parent[i]));const unite=(a,b)=>{a=find(a);b=find(b);if(a!==b)parent[b]=a};for(let i=0;i<n;i++)for(let j=i+1;j<n;j++){if(haversineKm(items[i],items[j])<=kmRadius(items[i])+kmRadius(items[j]))unite(i,j)}const groups={};items.forEach((s,i)=>{const k=find(i);(groups[k]||(groups[k]=[])).push(s)});return Object.values(groups)}

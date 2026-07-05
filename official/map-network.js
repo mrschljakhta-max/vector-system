@@ -8,9 +8,8 @@
   const sb = () => client || (window.supabase && window.VECTOR_SUPABASE_URL && window.VECTOR_SUPABASE_KEY ? (client = window.supabase.createClient(window.VECTOR_SUPABASE_URL, window.VECTOR_SUPABASE_KEY)) : null);
   const isMap = m => !!(m && typeof m.addLayer === 'function' && typeof m.fitBounds === 'function');
   function map() {
-    if (isMap(window.vectorLeafletMap)) return window.vectorLeafletMap;
-    try { const m = eval('vectorMap'); if (isMap(m)) { window.vectorLeafletMap = m; return m; } } catch {}
-    return null;
+    const m = window.getVectorMap?.() || window.vectorLeafletMap || window.vectorMap || null;
+    return isMap(m) ? m : null;
   }
 
   function loadScriptOnce(src){

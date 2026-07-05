@@ -9,10 +9,8 @@
   }
   function isMap(map) { return !!(map && typeof map.on === 'function' && typeof map.distance === 'function' && typeof map.getCenter === 'function'); }
   function getMap() {
-    if (isMap(window.vectorLeafletMap)) return window.vectorLeafletMap;
-    if (isMap(window.vectorMap)) return window.vectorMap;
-    try { const map = eval('vectorMap'); if (isMap(map)) { window.vectorLeafletMap = map; return map; } } catch {}
-    return null;
+    const map = window.getVectorMap?.() || window.vectorLeafletMap || window.vectorMap || null;
+    return isMap(map) ? map : null;
   }
   function ensureScaleElement() {
     if (scaleEl) return scaleEl;
