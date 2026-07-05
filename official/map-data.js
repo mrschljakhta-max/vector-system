@@ -36,7 +36,7 @@
   const routeCache = new Map();
   function sb(){ if(client) return client; if(!window.supabase||!window.VECTOR_SUPABASE_URL||!window.VECTOR_SUPABASE_KEY) return null; client=window.supabase.createClient(window.VECTOR_SUPABASE_URL,window.VECTOR_SUPABASE_KEY); return client; }
   function isLeafletMap(m){ return !!(m && typeof m.addLayer === 'function' && typeof m.removeLayer === 'function' && typeof m.fitBounds === 'function'); }
-  function getMap(){ const m=window.getVectorMap?.() || window.vectorLeafletMap || window.vectorMap || null; return isLeafletMap(m) ? m : null; }
+  function getMap(){ if(isLeafletMap(window.vectorLeafletMap)) return window.vectorLeafletMap; if(isLeafletMap(window.vectorMap)) return window.vectorMap; try{ const m=eval('vectorMap'); if(isLeafletMap(m)){ window.vectorLeafletMap=m; return m; } }catch{} return null; }
 
   function ensureDialog(){
     if(document.querySelector('#mapDataDialog')) return;

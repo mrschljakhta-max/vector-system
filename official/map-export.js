@@ -22,7 +22,8 @@
   let previewHeatCanvas = null;
   let lastPreviewState = null;
 
-  function mainMap(){ return window.getVectorMap?.() || window.vectorLeafletMap || window.vectorMap || null; }
+  function mainMap(){ return window.vectorLeafletMap || window.vectorMap || safeEvalMap(); }
+  function safeEvalMap(){ try { const m = eval('vectorMap'); if (m && m.addLayer) return m; } catch {} return null; }
   function registry(){ return window.vectorLayerRegistry || {}; }
   function byId(id){ return document.querySelector(id); }
   function checked(id){ return !!byId(id)?.checked; }

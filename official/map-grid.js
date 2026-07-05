@@ -2,8 +2,10 @@
   let grid = null;
   let on = false;
   function map(){
-    const m = window.getVectorMap?.() || window.vectorLeafletMap || window.vectorMap || null;
-    return m && typeof m.addLayer === 'function' ? m : null;
+    if(window.vectorLeafletMap) return window.vectorLeafletMap;
+    if(window.vectorMap) return window.vectorMap;
+    try { const m = eval('vectorMap'); if(m && typeof m.addLayer === 'function'){ window.vectorLeafletMap = m; return m; } } catch {}
+    return null;
   }
   function step(z){ if(z>=13) return .01; if(z>=11) return .02; if(z>=9) return .05; if(z>=7) return .1; return .25; }
   function round(v,s){ return Math.floor(v/s)*s; }
