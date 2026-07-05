@@ -25,6 +25,7 @@
     loadScriptOnce('./map-label-collision.js?v=20260704-1');
     loadScriptOnce('./map-clusters.js?v=20260704-1');
     loadScriptOnce('./map-grid.js?v=20260704-1');
+    loadScriptOnce('./hm.js?v=20260705-1');
     const nav = document.querySelector('.hover-nav--right');
     if (!nav || document.querySelector('#networkBtn')) return;
     const b = document.createElement('button');
