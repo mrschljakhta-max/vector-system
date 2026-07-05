@@ -25,26 +25,68 @@ const MAP_LAYERS = {
 };
 
 let activeLayer = null;
+let mapReadyTimer = null;
 
 function isLeafletReady() {
   return Boolean(window.L && typeof window.L.map === 'function');
 }
 
-function initVectorMap() {
-  if (window.vectorMap || !isLeafletReady()) return window.vectorMap || null;
+function isLeafletMap(map) {
+  return Boolean(map && typeof map.addLayer === 'function' && typeof map.invalidateSize === 'function');
+}
 
-  window.vectorMap = window.L.map('vectorMap', { zoomControl: false }).setView([48.86, 37.60], 9);
+function isWorkspaceOpen() {
+  return Boolean(workspace?.classList.contains('is-open') && workspace?.getAttribute('aria-hidden') !== 'true');
+}
+
+function getMapElement() {
+  return document.querySelector('#vectorMap');
+}
+
+function canCreateMap() {
+  const mapElement = getMapElement();
+  return Boolean(isLeafletReady() && mapElement && isWorkspaceOpen());
+}
+
+function safeInvalidateMap(delay = 0) {
+  window.setTimeout(() => {
+    const map = window.vectorMap || window.vectorLeafletMap;
+    if (isLeafletMap(map)) {
+      map.invalidateSize(true);
+      window.vectorScaleRefresh?.();
+    }
+  }, delay);
+}
+
+function scheduleMapRefresh() {
+  [0, 120, 350, 800].forEach((delay) => safeInvalidateMap(delay));
+}
+
+function initVectorMap() {
+  if (isLeafletMap(window.vectorMap)) {
+    scheduleMapRefresh();
+    return window.vectorMap;
+  }
+
+  if (!canCreateMap()) return null;
+
+  const mapElement = getMapElement();
+  window.vectorMap = window.L.map(mapElement, {
+    zoomControl: false,
+    preferCanvas: true,
+  }).setView([48.86, 37.60], 9);
   window.vectorLeafletMap = window.vectorMap;
   window.L.control.zoom({ position: 'bottomright' }).addTo(window.vectorMap);
-  setMapLayer('white');
-  document.querySelector('#vectorMap')?.classList.add('is-ready');
+  setMapLayer('white', { closeDialog: false });
+  mapElement.classList.add('is-ready');
+  scheduleMapRefresh();
 
   return window.vectorMap;
 }
 
-function setMapLayer(layerKey = 'white') {
-  const map = window.vectorMap || initVectorMap();
-  if (!map) return;
+function setMapLayer(layerKey = 'white', options = {}) {
+  const map = isLeafletMap(window.vectorMap) ? window.vectorMap : initVectorMap();
+  if (!map || !window.L) return;
 
   if (activeLayer) map.removeLayer(activeLayer);
   const config = MAP_LAYERS[layerKey] || MAP_LAYERS.white;
@@ -56,7 +98,9 @@ function setMapLayer(layerKey = 'white') {
   document.querySelectorAll('.map-type-card').forEach((button) => {
     button.classList.toggle('is-active', button.dataset.layer === layerKey);
   });
-  closeMapDialog();
+
+  scheduleMapRefresh();
+  if (options.closeDialog !== false) closeMapDialog();
 }
 
 function openMapDialog() {
@@ -69,15 +113,16 @@ function closeMapDialog() {
   mapDialog?.setAttribute('aria-hidden', 'true');
 }
 
-
-function getVectorMap() {
-  const map = window.vectorLeafletMap || window.vectorMap || initVectorMap();
-  if (map && typeof map.addLayer === 'function') {
+function getVectorMap(options = {}) {
+  const map = window.vectorLeafletMap || window.vectorMap || null;
+  if (isLeafletMap(map)) {
     window.vectorLeafletMap = map;
     window.vectorMap = map;
     return map;
   }
-  return null;
+
+  if (options.create === false || !isWorkspaceOpen()) return null;
+  return initVectorMap();
 }
 
 window.initVectorMap = initVectorMap;
@@ -85,6 +130,7 @@ window.getVectorMap = getVectorMap;
 window.setMapLayer = setMapLayer;
 window.openMapDialog = openMapDialog;
 window.closeMapDialog = closeMapDialog;
+window.refreshVectorMap = scheduleMapRefresh;
 
 function forceNavVisibility() {
   if (!document.querySelector('#vectorNavEmergencyStyles')) {
@@ -124,7 +170,7 @@ function loadLibraryAssets() {
   injectAsset('link', { rel: 'stylesheet', href: './supabase-library.css?v=20260704-1' });
   injectAsset('script', { src: './supabase-library.js?v=20260704-1', defer: true });
   injectAsset('script', { src: './map-item-filter.js?v=20260704-1', defer: true });
-  injectAsset('script', { src: './map-scale.js?v=20260704-1', defer: true });
+  injectAsset('script', { src: './map-scale.js?v=20260705-fix-map-1', defer: true });
   injectAsset('script', { src: './map-layer-control.js?v=20260705-4', defer: true });
   injectAsset('script', { src: './map-polygons-control.js?v=20260705-4', defer: true });
   injectAsset('link', { rel: 'stylesheet', href: './map-data.css?v=20260704-7' });
@@ -185,7 +231,8 @@ function showSection(sectionId) {
   forceNavVisibility();
 
   if (sectionId === 'map') {
-    setTimeout(() => window.vectorMap?.invalidateSize(), 80);
+    initVectorMap();
+    scheduleMapRefresh();
   }
 }
 
@@ -199,11 +246,12 @@ window.enterVector = function enterVector() {
   showSection('map');
   forceNavVisibility();
 
-  setTimeout(() => {
+  window.clearTimeout(mapReadyTimer);
+  mapReadyTimer = window.setTimeout(() => {
     initVectorMap();
     ensureMapDataButton();
     forceNavVisibility();
-    window.vectorMap?.invalidateSize();
+    scheduleMapRefresh();
   }, 250);
 };
 
