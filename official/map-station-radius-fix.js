@@ -34,8 +34,13 @@
     return color === '#22C55E' || color === '#15803D';
   }
 
+  function isSuppressedByCoverage(layer) {
+    return Boolean(layer?.__vectorStationRadiusSuppressedByCoverage || layer?.__vectorStationRadiusSuppressedByPolygon);
+  }
+
   function fixLayer(layer) {
     if (!isGreenRadius(layer)) return;
+    if (isSuppressedByCoverage(layer)) return;
     layer.options.vectorLayerKey = layer.options.vectorLayerKey || 'stationRadius';
     layer.setStyle(NO_FILL_STYLE);
     const el = layer.getElement?.();
