@@ -56,6 +56,13 @@
   right: var(--vector-panel-right) !important;
 }
 
+#vectorClusterPanel {
+  top: calc(var(--vector-tool-top) + var(--vector-tool-step) * 5 - 22px) !important;
+  right: var(--vector-panel-right) !important;
+  width: min(340px, calc(100vw - 190px)) !important;
+  max-height: min(460px, calc(100vh - 90px)) !important;
+}
+
 /* Compact heatmap dialog, opened from upper-right stack */
 #hmPanel.hmPanel {
   top: calc(var(--vector-tool-top) + var(--vector-tool-step) * 2 + 6px) !important;
@@ -145,6 +152,11 @@
     padding: 12px !important;
   }
 
+  #vectorClusterPanel {
+    width: min(310px, calc(100vw - 184px)) !important;
+    max-height: min(420px, calc(100vh - 80px)) !important;
+  }
+
   #hmPanel.hmPanel .hmHead b {
     font-size: 17px !important;
   }
@@ -167,6 +179,11 @@
   }
 
   #hmPanel.hmPanel {
+    width: min(270px, calc(100vw - 152px)) !important;
+    max-height: min(410px, calc(100vh - 76px)) !important;
+  }
+
+  #vectorClusterPanel {
     width: min(270px, calc(100vw - 152px)) !important;
     max-height: min(410px, calc(100vh - 76px)) !important;
   }
