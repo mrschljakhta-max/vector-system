@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="uk" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VECTOR — Аналітика</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="./vector-analytics.css?v=20260707-standalone-1" />
+  <style>
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;background:#0b0f16;font-family:'Rajdhani',Arial,sans-serif}.topbar{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:14px;padding:14px 22px;background:rgba(11,15,22,.96);border-bottom:1px solid rgba(255,255,255,.1)}.topbar a{color:#d78219;text-decoration:none;text-transform:uppercase;letter-spacing:.12em}.topbar b{color:#e7edf7;letter-spacing:.18em}.analytics-section{min-height:100vh}.map-host{height:1px;width:1px;overflow:hidden;position:absolute;left:-9999px}
+  </style>
+</head>
+<body>
+  <nav class="topbar"><a href="./">← До карти</a><b>VECTOR Analytics</b></nav>
+  <main>
+    <article class="section analytics-section" id="analytics" data-title="Аналітика"></article>
+    <div id="vectorMap" class="map-host"></div>
+  </main>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    window.VECTOR_SUPABASE_URL='https://vfshxogiuaefrgppuypt.supabase.co';
+    window.VECTOR_SUPABASE_KEY='sb_publishable_yenD-zpmlFuhKKnojukBZg_z7pr_jzg';
+  </script>
+  <script src="./vector-analytics.js?v=20260707-standalone-1"></script>
+</body>
+</html>
