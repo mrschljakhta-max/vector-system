@@ -58,6 +58,33 @@ function forceScript(src,version,cleanup=[]){
   s.defer=true;
   document.head.appendChild(s);
 }
+function ensureAnalyticsWorkspace(){
+  const leftNav=document.querySelector('.hover-nav--left');
+  const refsBtn=leftNav?.querySelector('[data-section="refs"]');
+  if(leftNav && !leftNav.querySelector('[data-section="analytics"]')){
+    const btn=document.createElement('button');
+    btn.className='hover-nav__item nav__item';
+    btn.dataset.section='analytics';
+    btn.type='button';
+    btn.innerHTML='<span class="nav-icon-text">◈</span><span>Аналітика</span>';
+    btn.addEventListener('click',()=>showSection('analytics'));
+    leftNav.insertBefore(btn,refsBtn || leftNav.querySelector('.hover-nav__item--bottom'));
+  }
+  const content=document.querySelector('.map-shell.content');
+  const refs=document.querySelector('#refs');
+  if(content && !document.querySelector('#analytics')){
+    const article=document.createElement('article');
+    article.className='section analytics-section';
+    article.id='analytics';
+    article.dataset.title='Аналітика';
+    content.insertBefore(article,refs || null);
+  }
+}
+function loadAnalyticsAssets(){
+  ensureAnalyticsWorkspace();
+  injectAsset('link',{rel:'stylesheet',href:'./vector-analytics.css?v=20260707-1'});
+  injectAsset('script',{src:'./vector-analytics.js?v=20260707-1',defer:true});
+}
 function loadLibraryAssets(){
   injectAsset('link',{rel:'stylesheet',href:'./supabase-library.css?v=20260704-1'});
   injectAsset('script',{src:'./supabase-library.js?v=20260704-1',defer:true});
@@ -71,6 +98,7 @@ function loadLibraryAssets(){
   injectAsset('script',{src:'./dict-editor.js?v=20260704-1',defer:true});
   injectAsset('script',{src:'./route-point-editor.js?v=20260704-2',defer:true});
   injectAsset('script',{src:'./map-network.js?v=20260704-1',defer:true});
+  loadAnalyticsAssets();
 }
 function loadExportStable(){
   forceScript('./map-export.js','20260706-export-preview-stable-1',['#exportBtn','#exportModal','#exportCss']);
@@ -99,9 +127,11 @@ function ensureMapDataButton(){
   rightNav.insertBefore(btn,rightNav.firstChild);
 }
 function showSection(id){
+  ensureAnalyticsWorkspace();
   document.querySelectorAll('.nav__item').forEach(item=>item.classList.toggle('is-active',item.dataset.section===id));
   document.querySelectorAll('.section').forEach(section=>section.classList.toggle('is-active',section.id===id));
   ensureMapDataButton();syncMapToolVisibility();
+  if(id==='analytics') setTimeout(()=>window.vectorRunAnalytics?.(),180);
   setTimeout(()=>{try{window.vectorMap?.invalidateSize?.()}catch{}},120);
 }
 window.enterVector=function(){
@@ -130,6 +160,7 @@ applyTheme();
 injectMapToolVisibilityStyles();
 syncMapToolVisibility();
 loadLibraryAssets();
+setTimeout(loadAnalyticsAssets,500);
 setTimeout(loadExportStable,900);
 openLogin?.addEventListener('click',()=>openAuth('login'));
 closeModal?.addEventListener('click',closeAuth);
