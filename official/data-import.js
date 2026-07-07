@@ -21,10 +21,11 @@
       const left = document.createElement('aside');
       left.id = 'vectorEmergencyLeft';
       left.className = 'vector-emergency-nav vector-emergency-nav--left';
-      left.innerHTML = '<button class="is-active" type="button" data-target="map"><img src="../assets/map-pin-share.svg" alt=""><span>Карта</span></button><button type="button" data-target="refs"><img src="../assets/book-icon.svg" alt=""><span>Бібліотека</span></button><button class="vector-emergency-exit" type="button" data-action="logout"><span class="vector-emergency-icon">⎋</span><span>Вихід</span></button>';
+      left.innerHTML = '<button class="is-active" type="button" data-target="map"><img src="../assets/map-pin-share.svg" alt=""><span>Карта</span></button><button type="button" data-action="analytics"><span class="vector-emergency-icon">◈</span><span>Аналітика</span></button><button type="button" data-target="refs"><img src="../assets/book-icon.svg" alt=""><span>Бібліотека</span></button><button class="vector-emergency-exit" type="button" data-action="logout"><span class="vector-emergency-icon">⎋</span><span>Вихід</span></button>';
       document.body.appendChild(left);
       left.addEventListener('click', (e) => {
         const button = e.target.closest('button'); if (!button) return;
+        if (button.dataset.action === 'analytics') { window.location.href = './analytics.html?v=2'; return; }
         if (button.dataset.action === 'logout') { window.logoutVector?.(); hideEmergencyNav(); return; }
         showSectionFallback(button.dataset.target);
       });
@@ -109,7 +110,7 @@
       const rows = await readTable(file);
       if (!rows.length) throw new Error('Таблиця порожня');
       const headers = normalizeHeaders(rows[0]);
-      const body = rows.slice(1).map((row, index) => headers.map((_, index) => row[index] ?? ''));
+      const body = rows.slice(1).map((row) => headers.map((_, index) => row[index] ?? ''));
       current = { id: makeId(), fileName: file.name, totalRows: Math.max(rows.length - 1, 0), headers, body, preview: body.slice(0, 50), mapping: autoMap(headers), createdAt: new Date().toISOString() };
       renderPreview();
       setDefaultCategory(file.name);
