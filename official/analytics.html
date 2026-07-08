@@ -3,21 +3,25 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VECTOR — Аналітика</title>
+  <title>VECTOR — Аналітичний штаб</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    *{box-sizing:border-box}body{margin:0;min-height:100vh;background:#0b0f16;color:#e7edf7;font-family:'Rajdhani',Arial,sans-serif}.topbar{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 22px;background:rgba(11,15,22,.96);border-bottom:1px solid rgba(255,255,255,.1)}.topbar a,.btn{color:#d78219;text-decoration:none;text-transform:uppercase;letter-spacing:.12em}.wrap{padding:30px 42px}.head{display:flex;justify-content:space-between;gap:20px;align-items:flex-end;margin-bottom:22px}.eyebrow{color:#d78219;text-transform:uppercase;letter-spacing:.18em;margin:0 0 8px}h1{margin:0;font-size:42px;letter-spacing:.14em;text-transform:uppercase}.muted{color:#9aa7bd}.btn{border:1px solid rgba(215,130,25,.65);background:rgba(215,130,25,.08);padding:11px 16px;cursor:pointer}.status{margin:0 0 18px;color:#9aa7bd}.grid{display:grid;grid-template-columns:repeat(4,minmax(160px,1fr));gap:14px;margin-bottom:22px}.card{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.055);padding:18px;min-height:116px;clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px)}.card small{display:block;color:#9aa7bd;text-transform:uppercase;letter-spacing:.12em}.card strong{display:block;margin-top:12px;font-size:34px;line-height:1}.card span{display:block;margin-top:8px;color:#c5cfdf}.panels{display:grid;grid-template-columns:1fr 1fr;gap:18px}.panel{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.045);padding:20px;min-height:260px}.panel h2{margin:0 0 14px;font-size:24px;letter-spacing:.08em}.table{width:100%;border-collapse:collapse;font-size:15px}.table th,.table td{border-bottom:1px solid rgba(255,255,255,.1);padding:10px 8px;text-align:left}.table th{color:#9aa7bd;text-transform:uppercase;font-size:12px;letter-spacing:.1em}.list{display:grid;gap:10px}.item{display:flex;justify-content:space-between;gap:12px;padding:10px 12px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.08)}.item span{color:#9aa7bd}.err{padding:14px;border:1px solid #ef4444;color:#fecaca;background:rgba(239,68,68,.08);white-space:pre-wrap}@media(max-width:1100px){.grid{grid-template-columns:repeat(2,1fr)}.panels{grid-template-columns:1fr}.wrap{padding:24px}}@media(max-width:650px){.grid{grid-template-columns:1fr}.head{display:block}h1{font-size:30px}}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;background:#0b0f16;color:#e7edf7;font-family:'Rajdhani',Arial,sans-serif}.topbar{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:14px 22px;background:rgba(11,15,22,.96);border-bottom:1px solid rgba(255,255,255,.1)}.topbar a,.btn{color:#d78219;text-decoration:none;text-transform:uppercase;letter-spacing:.12em}.wrap{padding:30px 42px}.head{display:flex;justify-content:space-between;gap:20px;align-items:flex-end;margin-bottom:18px}.eyebrow{color:#d78219;text-transform:uppercase;letter-spacing:.18em;margin:0 0 8px}h1{margin:0;font-size:42px;letter-spacing:.14em;text-transform:uppercase}.muted{color:#9aa7bd}.btn{border:1px solid rgba(215,130,25,.65);background:rgba(215,130,25,.08);padding:11px 16px;cursor:pointer}.tabs{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}.tab{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.045);color:#e7edf7;padding:10px 14px;cursor:pointer;text-transform:uppercase;letter-spacing:.1em}.tab.active{border-color:#d78219;color:#d78219;background:rgba(215,130,25,.1)}.status{margin:0 0 18px;color:#9aa7bd}.grid{display:grid;grid-template-columns:repeat(4,minmax(160px,1fr));gap:14px;margin-bottom:22px}.card{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.055);padding:18px;min-height:116px;clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px)}.card small{display:block;color:#9aa7bd;text-transform:uppercase;letter-spacing:.12em}.card strong{display:block;margin-top:12px;font-size:34px;line-height:1}.card span{display:block;margin-top:8px;color:#c5cfdf}.view{display:none}.view.active{display:block}.panels{display:grid;grid-template-columns:1fr 1fr;gap:18px}.panel{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.045);padding:20px;min-height:260px}.panel h2{margin:0 0 14px;font-size:24px;letter-spacing:.08em}.table{width:100%;border-collapse:collapse;font-size:15px}.table th,.table td{border-bottom:1px solid rgba(255,255,255,.1);padding:10px 8px;text-align:left;vertical-align:top}.table th{color:#9aa7bd;text-transform:uppercase;font-size:12px;letter-spacing:.1em}.list{display:grid;gap:10px}.item{display:flex;justify-content:space-between;gap:12px;padding:10px 12px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.08)}.item span{color:#9aa7bd;text-align:right}.bar{height:9px;background:rgba(255,255,255,.08);margin-top:8px}.bar i{display:block;height:100%;background:#d78219}.risk-high{color:#ff6b6b}.risk-mid{color:#ffd166}.risk-low{color:#63d471}.err{padding:14px;border:1px solid #ef4444;color:#fecaca;background:rgba(239,68,68,.08);white-space:pre-wrap}.recommendation{border-left:3px solid #d78219;padding:12px 14px;background:rgba(215,130,25,.06);margin-bottom:10px}.recommendation b{display:block;color:#e7edf7}.recommendation span{color:#9aa7bd}@media(max-width:1100px){.grid{grid-template-columns:repeat(2,1fr)}.panels{grid-template-columns:1fr}.wrap{padding:24px}}@media(max-width:650px){.grid{grid-template-columns:1fr}.head{display:block}h1{font-size:30px}.item{display:block}.item span{text-align:left;display:block;margin-top:6px}}
   </style>
 </head>
 <body>
   <nav class="topbar"><a href="./">← До карти</a><b>VECTOR Analytics</b></nav>
   <main class="wrap">
-    <section class="head"><div><p class="eyebrow">VECTOR Analytics</p><h1>Аналітика</h1><p class="muted">Прямий розрахунок із Supabase без залежності від карти та старої навігації.</p></div><button class="btn" id="refresh">Оновити</button></section>
+    <section class="head"><div><p class="eyebrow">VECTOR Analytics</p><h1>Аналітичний штаб</h1><p class="muted">Оперативний стан, покриття, навантаження, проблемні об’єкти та автоматичні рекомендації.</p></div><button class="btn" id="refresh">Оновити</button></section>
+    <div class="tabs"><button class="tab active" data-view="overview">Оперативна обстановка</button><button class="tab" data-view="coverage">Покриття</button><button class="tab" data-view="workload">Навантаження</button><button class="tab" data-view="recommendations">Рекомендації</button></div>
     <p class="status" id="status">Завантаження...</p>
     <section class="grid" id="kpi"></section>
-    <section class="panels"><article class="panel"><h2>Покриття</h2><div id="coverage">—</div></article><article class="panel"><h2>Неприкриті ВП/СП</h2><div id="uncovered">—</div></article></section>
+    <section class="view active" id="overview"><div class="panels"><article class="panel"><h2>Загальний стан</h2><div id="summary">—</div></article><article class="panel"><h2>Неприкриті ВП/СП</h2><div id="uncovered">—</div></article></div></section>
+    <section class="view" id="coverage"><div class="panels"><article class="panel"><h2>Покриття станцій</h2><div id="stationCoverage">—</div></article><article class="panel"><h2>Подвійне прикриття</h2><div id="multiCoverage">—</div></article></div></section>
+    <section class="view" id="workload"><div class="panels"><article class="panel"><h2>Навантаження станцій</h2><div id="stationLoad">—</div></article><article class="panel"><h2>Бойова робота</h2><div id="combatWork">—</div></article></div></section>
+    <section class="view" id="recommendations"><div class="panels"><article class="panel"><h2>Автоматичні висновки</h2><div id="recs">—</div></article><article class="panel"><h2>Для планування</h2><div id="planning">—</div></article></div></section>
   </main>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
@@ -25,6 +29,7 @@
     const KEY='sb_publishable_yenD-zpmlFuhKKnojukBZg_z7pr_jzg';
     const sb=window.supabase.createClient(URL,KEY);
     const q=s=>document.querySelector(s);
+    const qa=s=>Array.from(document.querySelectorAll(s));
     const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     const pct=(a,b)=>b?Math.round(a/b*100)+'%':'0%';
     const geo=r=>Number.isFinite(Number(r.lat))&&Number.isFinite(Number(r.lon));
@@ -33,39 +38,83 @@
     async function count(table){const {count,error}=await sb.from(table).select('*',{count:'exact',head:true}); if(error) throw new Error(table+': '+error.message); return count??0;}
     async function rows(table,cols,limit=5000){const {data,error}=await sb.from(table).select(cols).limit(limit); if(error) throw new Error(table+': '+error.message); return data||[];}
     function kpi(items){q('#kpi').innerHTML=items.map(i=>`<article class="card"><small>${esc(i[0])}</small><strong>${esc(i[1])}</strong><span>${esc(i[2])}</span></article>`).join('');}
+    function table(rows){return `<table class="table"><tbody>${rows.map(r=>`<tr><th>${esc(r[0])}</th><td>${r[1]}</td></tr>`).join('')}</tbody></table>`}
+    function list(rows){return rows.length?`<div class="list">${rows.map(r=>`<div class="item"><b>${esc(r[0])}</b><span>${r[1]}</span></div>`).join('')}</div>`:'<p class="muted">Даних немає.</p>'}
+    function bar(value,max){const w=max?Math.min(100,Math.round(value/max*100)):0;return `<div class="bar"><i style="width:${w}%"></i></div>`}
+    function setView(id){qa('.tab').forEach(t=>t.classList.toggle('active',t.dataset.view===id));qa('.view').forEach(v=>v.classList.toggle('active',v.id===id));}
+    qa('.tab').forEach(t=>t.addEventListener('click',()=>setView(t.dataset.view)));
+    function riskClass(n){return n>15?'risk-high':n>8?'risk-mid':'risk-low'}
+
     async function run(){
       q('#status').textContent='Розраховую показники...';
-      q('#coverage').textContent='—'; q('#uncovered').textContent='—';
       try{
-        const [cover,stations,req,events]=await Promise.all([
-          rows('dict_cover_objects','object_name,object_type,type_code,mgrs,lat,lon,is_active',2000),
-          rows('dict_stations','station_name,station_code,status_text,lat,lon,mgrs,coverage_radius_km,is_active',1000),
+        const [cover,stations,req,events,excel,word]=await Promise.all([
+          rows('dict_cover_objects','object_name,object_type,type_code,mgrs,lat,lon,is_active,unit_id,settlement_id',3000),
+          rows('dict_stations','station_name,station_code,status_text,lat,lon,mgrs,coverage_radius_km,is_active',1200),
           count('norm_excel_requests'),
-          count('norm_word_events')
+          count('norm_word_events'),
+          rows('norm_excel_requests','*',1000).catch(()=>[]),
+          rows('norm_word_events','*',2500).catch(()=>[])
         ]);
         const active=cover.filter(r=>r.is_active!==false);
-        const st=stations.filter(r=>r.is_active!==false);
-        const objs=active.filter(geo), sts=st.filter(geo);
+        const activeStations=stations.filter(r=>r.is_active!==false);
+        const objs=active.filter(geo), sts=activeStations.filter(geo);
         const vp=active.filter(r=>String(r.object_type||r.type_code||'').toUpperCase().includes('ВП')||String(r.type_code||'').toUpperCase()==='VP');
         const sp=active.filter(r=>String(r.object_type||r.type_code||'').toUpperCase().includes('СП')||String(r.type_code||'').toUpperCase()==='SP');
         const covered=[],uncovered=[];
         objs.forEach(o=>{const hits=sts.map(s=>({s,dist:km(o,s),radius:+s.coverage_radius_km||15})).filter(x=>x.dist<=x.radius).sort((a,b)=>a.dist-b.dist);const nearest=sts.map(s=>({s,dist:km(o,s)})).sort((a,b)=>a.dist-b.dist)[0];(hits.length?covered:uncovered).push({...o,hits,nearest});});
+        const multi=covered.filter(o=>o.hits.length>1);
+        const stationCoverage=sts.map(s=>{const objsHit=objs.map(o=>({o,dist:km(o,s)})).filter(x=>x.dist<=(+s.coverage_radius_km||15));return {...s,count:objsHit.length,far:Math.max(0,...objsHit.map(x=>x.dist)),avg:objsHit.length?objsHit.reduce((a,x)=>a+x.dist,0)/objsHit.length:0};}).sort((a,b)=>b.count-a.count);
+        const maxLoad=Math.max(1,...stationCoverage.map(s=>s.count));
+        const detected=countWords(word,['вияв','detected']);
+        const suppressed=countWords(word,['подав','suppressed']);
+        const suppressionRate=detected?Math.round(suppressed/detected*100):0;
+        const reqText=excel.map(r=>JSON.stringify(r).toLowerCase()).join('\n');
+        const coverReq=(reqText.match(/прикрит/g)||[]).length;
+        const corridorReq=(reqText.match(/коридор/g)||[]).length;
         kpi([
           ['Активні ВП/СП',active.length,`ВП: ${vp.length} · СП: ${sp.length}`],
           ['З координатами',objs.length,pct(objs.length,active.length)+' від активних'],
-          ['Прикрито',covered.length,pct(covered.length,objs.length)+' від обʼєктів з координатами'],
+          ['Покрито',covered.length,pct(covered.length,objs.length)+' від обʼєктів з координатами'],
           ['Неприкрито',uncovered.length,'потребують рішення'],
-          ['Активні станції',st.length,'з координатами: '+sts.length],
-          ['Заявки Excel',req,'norm_excel_requests'],
-          ['Події Word',events,'norm_word_events'],
-          ['Подвійне прикриття',covered.filter(o=>o.hits.length>1).length,'2+ станції в радіусі']
+          ['Активні станції',activeStations.length,'з координатами: '+sts.length],
+          ['Подвійне прикриття',multi.length,'2+ станції в радіусі'],
+          ['Заявки',req,`прикриття≈${coverReq} · коридори≈${corridorReq}`],
+          ['Події',events,`коеф. подавлення≈${suppressionRate}%`]
         ]);
-        q('#coverage').innerHTML=`<table class="table"><tbody><tr><th>Обʼєкти з координатами</th><td>${objs.length}</td></tr><tr><th>Станції з координатами</th><td>${sts.length}</td></tr><tr><th>Покрито</th><td>${covered.length} (${pct(covered.length,objs.length)})</td></tr><tr><th>Без прикриття</th><td>${uncovered.length}</td></tr></tbody></table>`;
-        q('#uncovered').innerHTML=uncovered.length?`<div class="list">${uncovered.slice(0,40).map(o=>`<div class="item"><b>${esc(o.object_name)}</b><span>${esc(o.object_type||o.type_code||'')} · найближча: ${esc(o.nearest?.s?.station_name||'—')} ${o.nearest?Math.round(o.nearest.dist*10)/10+' км':''}</span></div>`).join('')}</div>`:'<p class="muted">Усі обʼєкти з координатами потрапляють у радіуси станцій.</p>';
+        q('#summary').innerHTML=table([
+          ['Покриття системи',`${covered.length} / ${objs.length} (${pct(covered.length,objs.length)})`],
+          ['Об’єкти без координат',`${active.length-objs.length}`],
+          ['Станції без координат',`${activeStations.length-sts.length}`],
+          ['Середнє навантаження на станцію',`${sts.length?Math.round(covered.length/sts.length*10)/10:0} об’єктів`],
+          ['Критичний показник',`<span class="${riskClass(uncovered.length)}">${uncovered.length} неприкритих об’єктів</span>`]
+        ]);
+        q('#uncovered').innerHTML=list(uncovered.slice(0,50).map(o=>[o.object_name,`${esc(o.object_type||o.type_code||'')} · найближча: ${esc(o.nearest?.s?.station_name||'—')} ${o.nearest?Math.round(o.nearest.dist*10)/10+' км':''}`]));
+        q('#stationCoverage').innerHTML=list(stationCoverage.slice(0,30).map(s=>[s.station_name||s.station_code||'Станція',`${s.count} об’єктів · сер. ${Math.round(s.avg*10)/10} км · max ${Math.round(s.far*10)/10} км ${bar(s.count,maxLoad)}`]));
+        q('#multiCoverage').innerHTML=list(multi.slice(0,40).map(o=>[o.object_name,`${o.hits.length} станції · найближча ${esc(o.hits[0]?.s?.station_name||'—')} (${Math.round((o.hits[0]?.dist||0)*10)/10} км)`]));
+        q('#stationLoad').innerHTML=list(stationCoverage.slice(0,40).map(s=>[s.station_name||s.station_code||'Станція',`${s.count} об’єктів у радіусі · ${s.count>Math.max(8,Math.round(covered.length/Math.max(1,sts.length)*1.6))?'<span class="risk-high">перевантаження</span>':'<span class="risk-low">норма</span>'}`]));
+        q('#combatWork').innerHTML=table([
+          ['Заявки Excel',req],['Події Word',events],['Орієнтовні виявлення',detected],['Орієнтовні подавлення',suppressed],['Орієнтовний коефіцієнт подавлення',suppressionRate+'%']
+        ]);
+        const recs=[];
+        if(uncovered.length) recs.push(['Закрити неприкриті об’єкти',`У системі ${uncovered.length} ВП/СП з координатами поза радіусами станцій. Почати з об’єктів, де найближча станція далі 15 км.`]);
+        const overloaded=stationCoverage.filter(s=>s.count>Math.max(8,Math.round(covered.length/Math.max(1,sts.length)*1.6)));
+        if(overloaded.length) recs.push(['Перерозподілити навантаження',`${overloaded.length} станцій мають підвищене навантаження. Перевірити доцільність переміщення або додавання засобів у їх районах.`]);
+        if(active.length-objs.length) recs.push(['Доопрацювати координати',`${active.length-objs.length} активних ВП/СП не мають WGS-84 координат. Вони не беруть участь у розрахунку покриття.`]);
+        if(activeStations.length-sts.length) recs.push(['Уточнити координати станцій',`${activeStations.length-sts.length} станцій без координат не враховуються в покритті.`]);
+        if(!recs.length) recs.push(['Система стабільна','Критичних прогалин за поточними координатами не виявлено.']);
+        q('#recs').innerHTML=recs.map(r=>`<div class="recommendation"><b>${esc(r[0])}</b><span>${esc(r[1])}</span></div>`).join('');
+        q('#planning').innerHTML=table([
+          ['Для розділу забезпечення','використати KPI: активні ВП/СП, координати, станції, неприкриті об’єкти'],
+          ['Для бойової роботи','використати заявки, події, виявлення/подавлення, навантаження станцій'],
+          ['Для рішення начальника служби','окремо вивести перелік неприкритих об’єктів і перевантажених станцій'],
+          ['Для карти','нанести неприкриті об’єкти червоним, подвійне прикриття — окремим шаром']
+        ]);
         q('#status').textContent='Оновлено: '+new Date().toLocaleString('uk-UA');
       }catch(e){console.error(e);q('#status').innerHTML='<span class="err">'+esc(e.message||e)+'</span>';}
     }
-    q('#refresh').addEventListener('click',run); run();
+    function countWords(rows,keys){let n=0;rows.forEach(r=>{const s=JSON.stringify(r).toLowerCase();if(keys.some(k=>s.includes(k)))n++;});return n;}
+    q('#refresh').addEventListener('click',run);run();
   </script>
 </body>
 </html>
