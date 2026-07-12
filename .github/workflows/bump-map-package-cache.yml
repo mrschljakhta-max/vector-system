@@ -1,0 +1,36 @@
+name: Bump map package cache
+
+on:
+  push:
+    paths:
+      - .github/workflows/bump-map-package-cache.yml
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Refresh app cache key
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('official/index.html')
+          text = path.read_text(encoding='utf-8')
+          text = text.replace('app.js?v=20260706-login-modal-1', 'app.js?v=20260712-map-package-v1')
+          path.write_text(text, encoding='utf-8')
+          PY
+          rm -f .github/workflows/bump-map-package-cache.yml
+      - name: Commit changes
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add official/index.html .github/workflows/bump-map-package-cache.yml
+          git commit -m "Refresh app cache for map package export"
+          git push
