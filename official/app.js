@@ -51,7 +51,7 @@ function injectMapToolVisibilityStyles(){
   if(document.querySelector('#vectorMapToolVisibilityStyles'))return;
   const s=document.createElement('style');
   s.id='vectorMapToolVisibilityStyles';
-  s.textContent='body:not(.vector-map-tools-visible) #openLayerControl,body:not(.vector-map-tools-visible) #openPolygonControl,body:not(.vector-map-tools-visible) #gridBtn,body:not(.vector-map-tools-visible) #hm,body:not(.vector-map-tools-visible) #exportBtn,body:not(.vector-map-tools-visible) #clusterBtn,body:not(.vector-map-tools-visible) #vectorLayerPanel,body:not(.vector-map-tools-visible) #vectorPolygonPanel,body:not(.vector-map-tools-visible) #hmPanel,body:not(.vector-map-tools-visible) #vectorClusterPanel,body:not(.vector-map-tools-visible) #exportModal{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}';
+  s.textContent='body:not(.vector-map-tools-visible) #openLayerControl,body:not(.vector-map-tools-visible) #openPolygonControl,body:not(.vector-map-tools-visible) #gridBtn,body:not(.vector-map-tools-visible) #hm,body:not(.vector-map-tools-visible) #exportBtn,body:not(.vector-map-tools-visible) #clusterBtn,body:not(.vector-map-tools-visible) #mapPackageBtn,body:not(.vector-map-tools-visible) #vectorLayerPanel,body:not(.vector-map-tools-visible) #vectorPolygonPanel,body:not(.vector-map-tools-visible) #hmPanel,body:not(.vector-map-tools-visible) #vectorClusterPanel,body:not(.vector-map-tools-visible) #exportModal,body:not(.vector-map-tools-visible) #mapPackageModal{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}';
   document.head.appendChild(s);
 }
 function forceNavVisibility(){
@@ -70,8 +70,8 @@ function forceNavVisibility(){
 }
 function isWorkspaceOpen(){return Boolean(document.querySelector('#workspace.vector-workspace.is-open'))}
 function closeMapToolPanels(){
-  ['#vectorLayerPanel','#vectorPolygonPanel','#hmPanel','#vectorClusterPanel','#exportModal'].forEach(sel=>{const el=document.querySelector(sel);if(!el)return;el.classList.remove('is-open','open')});
-  ['#openLayerControl','#openPolygonControl','#gridBtn','#hm','#exportBtn','#clusterBtn'].forEach(sel=>document.querySelector(sel)?.classList.remove('is-active','on'));
+  ['#vectorLayerPanel','#vectorPolygonPanel','#hmPanel','#vectorClusterPanel','#exportModal','#mapPackageModal'].forEach(sel=>{const el=document.querySelector(sel);if(!el)return;el.classList.remove('is-open','open')});
+  ['#openLayerControl','#openPolygonControl','#gridBtn','#hm','#exportBtn','#clusterBtn','#mapPackageBtn'].forEach(sel=>document.querySelector(sel)?.classList.remove('is-active','on'));
 }
 function syncMapToolVisibility(){
   injectMapToolVisibilityStyles();
@@ -99,7 +99,11 @@ function loadLibraryAssets(){
   injectAsset('script',{src:'./map-network.js?v=20260704-1',defer:true});
   loadAnalyticsAssets();
 }
-function loadExportStable(){forceScript('./map-export.js','20260706-export-preview-stable-1',['#exportBtn','#exportModal','#exportCss']);setTimeout(syncMapToolVisibility,100)}
+function loadExportStable(){
+  forceScript('./map-export.js','20260706-export-preview-stable-1',['#exportBtn','#exportModal','#exportCss']);
+  setTimeout(()=>forceScript('./map-package-export.js','20260712-map-package-v1',['#mapPackageBtn','#mapPackageModal','#mapPackageCss']),250);
+  setTimeout(syncMapToolVisibility,500);
+}
 function applyTheme(){root.dataset.theme='dark';localStorage.setItem('vector-theme','dark');if(themeLabel)themeLabel.textContent='Темна'}
 function setAuthMode(mode){document.querySelectorAll('.auth-tab[data-auth-mode]').forEach(tab=>tab.classList.toggle('is-active',tab.dataset.authMode===mode));loginForm?.classList.toggle('is-active',mode==='login');registerForm?.classList.toggle('is-active',mode==='register')}
 function openAuth(mode='login'){setAuthMode(mode);authModal?.classList.add('is-open');authModal?.setAttribute('aria-hidden','false');syncMapToolVisibility()}
@@ -120,4 +124,4 @@ function showSection(id){
 window.enterVector=function(){closeAuth();landingScreen?.setAttribute('hidden','true');document.querySelector('.landing-bg')?.setAttribute('hidden','true');workspace?.classList.add('is-open');workspace?.setAttribute('aria-hidden','false');localStorage.setItem('vector-user-session',JSON.stringify({email:'local'}));showSection('map');setTimeout(()=>{ensureAnalyticsWorkspace();ensureMapDataButton();syncMapToolVisibility();try{window.vectorMap?.invalidateSize?.()}catch{}},250)};
 window.logoutVector=function(){workspace?.classList.remove('is-open');workspace?.setAttribute('aria-hidden','true');landingScreen?.removeAttribute('hidden');document.querySelector('.landing-bg')?.removeAttribute('hidden');localStorage.removeItem('vector-user-session');syncMapToolVisibility()};
 function renderFileList(){if(!fileList)return;let files=[];try{files=JSON.parse(localStorage.getItem('vector-reference-files')||'[]')}catch{}if(!files.length){fileList.textContent='Файли ще не додані.';return}fileList.innerHTML=files.map(f=>`<div class="file-entry"><strong>${String(f.name||'')}</strong><span>${String(f.type||'')}</span><span>${f.importedTableId?'імпортована таблиця':''}</span></div>`).join('')}
-applyTheme();injectMapToolVisibilityStyles();syncMapToolVisibility();ensureAnalyticsWorkspace();loadLibraryAssets();setTimeout(loadAnalyticsAssets,250);setTimeout(loadExportStable,900);openLogin?.addEventListener('click',()=>openAuth('login'));closeModal?.addEventListener('click',closeAuth);authModal?.addEventListener('click',e=>{if(e.target===authModal)closeAuth()});document.querySelectorAll('[data-auth-mode]').forEach(btn=>btn.addEventListener('click',()=>setAuthMode(btn.dataset.authMode)));loginForm?.addEventListener('submit',e=>{e.preventDefault();window.enterVector()});registerForm?.addEventListener('submit',e=>{e.preventDefault();alert('Заявку зафіксовано локально.')});document.querySelectorAll('.nav__item').forEach(btn=>btn.addEventListener('click',()=>showSection(btn.dataset.section)));clearFiles?.addEventListener('click',()=>{localStorage.removeItem('vector-reference-files');renderFileList()});renderFileList();setInterval(()=>{ensureAnalyticsWorkspace();syncMapToolVisibility()},250);document.addEventListener('click',()=>setTimeout(syncMapToolVisibility,40));
+applyTheme();injectMapToolVisibilityStyles();syncMapToolVisibility();ensureAnalyticsWorkspace();loadLibraryAssets();setTimeout(loadAnalyticsAssets,250);setTimeout(loadExportStable,900);openLogin?.addEventListener('click',()=>openAuth());closeModal?.addEventListener('click',closeAuth);authModal?.addEventListener('click',e=>{if(e.target===authModal)closeAuth()});document.querySelectorAll('[data-auth-mode]').forEach(btn=>btn.addEventListener('click',()=>setAuthMode(btn.dataset.authMode)));loginForm?.addEventListener('submit',e=>{e.preventDefault();window.enterVector()});registerForm?.addEventListener('submit',e=>{e.preventDefault();alert('Заявку зафіксовано локально.')});document.querySelectorAll('.nav__item').forEach(btn=>btn.addEventListener('click',()=>showSection(btn.dataset.section)));clearFiles?.addEventListener('click',()=>{localStorage.removeItem('vector-reference-files');renderFileList()});renderFileList();setInterval(()=>{ensureAnalyticsWorkspace();syncMapToolVisibility()},250);document.addEventListener('click',()=>setTimeout(syncMapToolVisibility,40));
