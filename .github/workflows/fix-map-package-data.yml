@@ -1,0 +1,64 @@
+name: Fix map package data loading
+
+on:
+  push:
+    paths:
+      - .github/workflows/fix-map-package-data.yml
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Patch exporter
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('official/map-package-export.js')
+          text = path.read_text(encoding='utf-8')
+          text = text.replace("const [events,stations,coverObjects,routes,points] = await Promise.all([", "const [events,stations,coverObjects,routes,points,settlements] = await Promise.all([")
+          text = text.replace("""      rowsTry([
+        {table:'dict_routes',select:'id,route_code,route_name,route_purpose,route_status,is_active,note,from:dict_settlements!dict_routes_from_settlement_id_fkey(id,name,lat,lon),to:dict_settlements!dict_routes_to_settlement_id_fkey(id,name,lat,lon)',limit:3000},
+        {table:'map_routes',select:'*',limit:3000}
+      ]),
+      rowsTry([
+        {table:'dict_map_points',select:'id,point_code,point_name,point_type,lat,lon,mgrs,is_active,note,settlement:dict_settlements(id,name)',limit:3000},
+        {table:'map_points',select:'*',limit:3000}
+      ])
+    ]);
+    dataCache={events,stations,coverObjects,routes,points,loadedAt:new Date().toISOString()};""", """      rowsTry([
+        {table:'dict_routes',select:'id,route_code,route_name,from_settlement_id,to_settlement_id,route_purpose,route_status,is_active,note',limit:3000},
+        {table:'map_routes',select:'*',limit:3000}
+      ]),
+      rowsTry([
+        {table:'dict_map_points',select:'id,point_code,point_name,point_type,settlement_id,lat,lon,mgrs,is_active,note',limit:3000},
+        {table:'map_points',select:'*',limit:3000}
+      ]),
+      rowsTry([{table:'dict_settlements',select:'id,name,lat,lon',limit:5000}])
+    ]);
+    dataCache={events,stations,coverObjects,routes,points,settlements,loadedAt:new Date().toISOString()};""")
+          text = text.replace("""  function normalizeRoutes(rows){
+    return (rows||[]).map(r=>{
+      const from=one(r.from),to=one(r.to);""", """  function normalizeRoutes(rows,settlements=[]){
+    const settlementMap=new Map((settlements||[]).map(s=>[String(s.id),s]));
+    return (rows||[]).map(r=>{
+      const from=one(r.from)||settlementMap.get(String(r.from_settlement_id)),to=one(r.to)||settlementMap.get(String(r.to_settlement_id));""")
+          text = text.replace("routes=normalizeRoutes(data.routes).filter(r=>r.active)", "routes=normalizeRoutes(data.routes,data.settlements).filter(r=>r.active)")
+          path.write_text(text, encoding='utf-8')
+          PY
+          node --check official/map-package-export.js
+          rm -f .github/workflows/fix-map-package-data.yml
+      - name: Commit changes
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add official/map-package-export.js .github/workflows/fix-map-package-data.yml
+          git commit -m "Fix route and point loading for map ZIP export"
+          git push
