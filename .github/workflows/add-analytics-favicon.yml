@@ -1,0 +1,54 @@
+name: Add analytics favicon
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/add-analytics-favicon.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch-favicon:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Add favicon to analytics page
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          page = Path("official/analytics.html")
+          text = page.read_text(encoding="utf-8")
+          title = "  <title>VECTOR — Аналітичний штаб</title>\n"
+          favicon = (
+              "  <link rel=\"icon\" type=\"image/png\" sizes=\"32x32\" "
+              "href=\"../assets/favicon-32.png?v=20260712\" />\n"
+              "  <meta name=\"theme-color\" content=\"#111418\" />\n"
+          )
+
+          if favicon not in text:
+              if title not in text:
+                  raise SystemExit("Analytics page title marker was not found")
+              text = text.replace(title, title + favicon, 1)
+              page.write_text(text, encoding="utf-8")
+          PY
+
+          rm -f .github/workflows/add-analytics-favicon.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add official/analytics.html .github/workflows/add-analytics-favicon.yml
+
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+
+          git commit -m "Fix analytics favicon"
+          git push
