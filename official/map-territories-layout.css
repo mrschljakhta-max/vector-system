@@ -1,0 +1,21 @@
+/* VECTOR territory tool: seventh item in the existing right-side map tool stack. */
+#openTerritoryControl {
+  top: calc(var(--vector-tool-top) + var(--vector-tool-step) * 6) !important;
+  right: var(--vector-tool-right) !important;
+}
+
+#vectorTerritoryPanel {
+  top: calc(var(--vector-tool-top) + 2px) !important;
+  right: var(--vector-panel-right) !important;
+  width: min(410px, calc(100vw - 190px)) !important;
+  max-height: calc(100vh - var(--vector-tool-top) - 36px) !important;
+}
+
+@media (max-width: 760px) {
+  #vectorTerritoryPanel {
+    left: auto !important;
+    right: var(--vector-panel-right) !important;
+    width: min(330px, calc(100vw - 152px)) !important;
+    max-height: calc(100vh - 70px) !important;
+  }
+}
